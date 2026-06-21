@@ -1,0 +1,12 @@
+dataset,check,status,detail
+analysis_panel,shape_rows,PASS,rows=441
+analysis_panel,province_count,PASS,province_count=63
+analysis_panel,year_count,PASS,year_count=7
+analysis_panel,duplicate_province_year,PASS,duplicates=0
+analysis_panel,missing_wage_region,PASS,missing=0
+analysis_panel,missing_min_wage_nominal,PASS,missing=0
+analysis_panel,missing_cpi_2018_base,PASS,missing=0
+analysis_panel,missing_real_min_wage,PASS,missing=0
+analysis_panel,missing_log_real_min_wage,PASS,missing=0
+analysis_panel,missing_log_employed_persons,PASS,missing=0
+analysis_panel,missing_min_wage_growth,PASS,missing=0; 2018 filled with 0 by wage_region

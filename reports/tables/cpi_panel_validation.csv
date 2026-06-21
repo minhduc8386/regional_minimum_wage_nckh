@@ -1,0 +1,6 @@
+dataset,check,status,detail
+cpi_panel,shape,PASS,rows=7
+cpi_panel,year_set,PASS,"years=[2018, 2019, 2020, 2021, 2022, 2023, 2024]"
+cpi_panel,missing,PASS,"missing={'year': 0, 'cpi_index': 0, 'cpi_2018_base': 0}"
+cpi_panel,duplicate_year,PASS,duplicates=0
+cpi_panel,base_2018_equals_100,PASS,cpi_2018_base=100.0

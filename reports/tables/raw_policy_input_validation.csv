@@ -1,0 +1,27 @@
+dataset,check,status,detail
+panel,shape,PASS,"shape=(441, 7)"
+panel,province_count,PASS,province_count=63
+panel,year_set,PASS,"years=[2018, 2019, 2020, 2021, 2022, 2023, 2024]"
+panel,duplicate_province_year,PASS,duplicates=0
+panel,missing,PASS,missing_total=0
+min_wage_raw,required_columns,PASS,"columns=['year', 'wage_region', 'min_wage_nominal', 'effective_date', 'decree', 'note', 'source']"
+min_wage_raw,shape,PASS,rows=28
+min_wage_raw,year_set,PASS,missing=[]; extra=[]
+min_wage_raw,four_regions_each_year,PASS,"regions_by_year={np.int64(2018): ['I', 'II', 'III', 'IV'], np.int64(2019): ['I', 'II', 'III', 'IV'], np.int64(2020): ['I', 'II', 'III', 'IV'], np.int64(2021): ['I', 'II', 'III', 'IV'], np.int64(2022): ['I', 'II', 'III', 'IV'], np.int64(2023): ['I', 'II', 'III', 'IV'], np.int64(2024): ['I', 'II', 'III', 'IV']}"
+min_wage_raw,valid_wage_regions,PASS,invalid_regions=[]
+min_wage_raw,min_wage_numeric_nonmissing,PASS,missing=0
+min_wage_raw,duplicate_year_region,PASS,duplicates=0
+mapping_raw,required_columns,PASS,"columns=['province', 'year', 'wage_region', 'mapping_note', 'source']"
+mapping_raw,shape,PASS,rows=441
+mapping_raw,province_count,PASS,province_count=63
+mapping_raw,year_set,PASS,missing=[]; extra=[]
+mapping_raw,duplicate_province_year,PASS,duplicates=0
+mapping_raw,missing_wage_region,PASS,missing=0
+mapping_raw,valid_wage_regions,PASS,invalid_regions=[]
+mapping_raw,province_names_match_panel,PASS,panel_not_in_mapping=[]; mapping_not_in_panel=[]
+mapping_raw,province_year_keys_match_panel,PASS,panel_not_in_mapping=0; mapping_not_in_panel=0
+cpi_raw,required_columns,PASS,"columns=['year', 'cpi_index', 'source', 'note']"
+cpi_raw,shape,PASS,rows=7
+cpi_raw,year_set,PASS,missing=[]; extra=[]
+cpi_raw,cpi_numeric_nonmissing,PASS,missing=0
+cpi_raw,duplicate_year,PASS,duplicates=0

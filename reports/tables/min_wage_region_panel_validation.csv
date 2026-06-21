@@ -1,0 +1,8 @@
+dataset,check,status,detail
+min_wage_panel,shape,PASS,rows=28
+min_wage_panel,year_count,PASS,year_count=7
+min_wage_panel,year_set,PASS,"years=[2018, 2019, 2020, 2021, 2022, 2023, 2024]"
+min_wage_panel,four_regions_each_year,PASS,"regions_by_year={np.int64(2018): ['I', 'II', 'III', 'IV'], np.int64(2019): ['I', 'II', 'III', 'IV'], np.int64(2020): ['I', 'II', 'III', 'IV'], np.int64(2021): ['I', 'II', 'III', 'IV'], np.int64(2022): ['I', 'II', 'III', 'IV'], np.int64(2023): ['I', 'II', 'III', 'IV'], np.int64(2024): ['I', 'II', 'III', 'IV']}"
+min_wage_panel,duplicate_year_region,PASS,duplicates=0
+min_wage_panel,required_missing,PASS,"missing={'year': 0, 'wage_region': 0, 'min_wage_nominal': 0}"
+min_wage_panel,valid_wage_regions,PASS,invalid=[]

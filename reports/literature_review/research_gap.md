@@ -1,0 +1,5 @@
+# Research Gap
+
+Các nghiên cứu trước về tác động của lương tối thiểu thường dựa trên OLS, Fixed Effects, Difference-in-Differences, border comparisons, event-study hoặc Propensity Score Matching. Nhóm nghiên cứu quốc tế đã xem xét nhiều kết quả như việc làm, tiền lương, giờ làm, phân phối thu nhập và phúc lợi hộ gia đình. Trong bối cảnh các nước đang phát triển, một số nghiên cứu cho thấy lương tối thiểu có thể làm dịch chuyển lao động giữa khu vực chính thức, phi chính thức, tự làm và thất nghiệp.
+
+Tại Việt Nam, các nghiên cứu hiện có đã khai thác VHLSS, LFS và dữ liệu doanh nghiệp để phân tích việc làm chính thức, tiền lương, giờ làm, phúc lợi hộ gia đình và phản ứng theo quy mô doanh nghiệp. Tuy nhiên, còn ít bằng chứng trực tiếp về tác động của lương tối thiểu vùng đến tỷ lệ việc làm phi chính thức trong giai đoạn gần đây, đặc biệt ở cấp tỉnh/năm và khi quan hệ giữa informal employment và các yếu tố kinh tế - lao động có thể phi tuyến. Vì vậy, nghiên cứu này đề xuất kết hợp visualization, FE/DiD/Event Study với Double Machine Learning và, nếu dữ liệu đủ mạnh, Causal Forest để đánh giá tác động trung bình và dị biệt của lương tối thiểu vùng tại Việt Nam.

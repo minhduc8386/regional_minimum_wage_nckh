@@ -1,0 +1,23 @@
+section,variable,metric,value,note
+summary_stats,min_wage_nominal,min,2760000,computed on unique wage_region-year values
+summary_stats,min_wage_nominal,max,4820000,computed on unique wage_region-year values
+summary_stats,min_wage_nominal,mean,3725714.285714286,computed on unique wage_region-year values
+summary_stats,min_wage_nominal,std,568159.3319263764,computed on unique wage_region-year values
+summary_stats,real_min_wage,min,2760000.0,computed on unique wage_region-year values
+summary_stats,real_min_wage,max,4165613.887604929,computed on unique wage_region-year values
+summary_stats,real_min_wage,mean,3418790.3462143755,computed on unique wage_region-year values
+summary_stats,real_min_wage,std,478618.6643475136,computed on unique wage_region-year values
+summary_stats,log_real_min_wage,min,14.830741237693331,computed on unique wage_region-year values
+summary_stats,log_real_min_wage,max,15.242374214703926,computed on unique wage_region-year values
+summary_stats,log_real_min_wage,mean,15.035339532179858,computed on unique wage_region-year values
+summary_stats,log_real_min_wage,std,0.14011213703827172,computed on unique wage_region-year values
+summary_stats,min_wage_growth,min,-0.0180166020813926,computed on unique wage_region-year values
+summary_stats,min_wage_growth,max,0.0291964952219487,computed on unique wage_region-year values
+summary_stats,min_wage_growth,mean,0.0025380859436424036,computed on unique wage_region-year values
+summary_stats,min_wage_growth,std,0.01449466066073717,computed on unique wage_region-year values
+variation_source,real_min_wage,unique_values_by_year,"{2018: 4, 2019: 4, 2020: 4, 2021: 4, 2022: 4, 2023: 4, 2024: 4}","within each year, variation comes from wage_region differences"
+variation_source,real_min_wage,unique_values_by_region,"{'I': 7, 'II': 7, 'III': 7, 'IV': 7}","within each wage_region, variation comes from year changes and CPI adjustment"
+variation_source,wage_region,province_count_by_region,"{'I': 7, 'II': 19, 'III': 36, 'IV': 6}",province-region pairs across all years; counts are not mutually exclusive if a province changes region
+variation_source,wage_region,provinces_switching_region,5,"province-level wage_region changes over time: ['Bac Lieu', 'Binh Phuoc', 'Binh Thuan', 'Ca Mau', 'Tay Ninh']"
+variation_source,wage_region,region_counts_by_year,"{2018: {'I': 7, 'II': 14, 'III': 36, 'IV': 6}, 2019: {'I': 7, 'II': 14, 'III': 36, 'IV': 6}, 2020: {'I': 7, 'II': 15, 'III': 35, 'IV': 6}, 2021: {'I': 7, 'II': 15, 'III': 35, 'IV': 6}, 2022: {'I': 7, 'II': 19, 'III': 31, 'IV': 6}, 2023: {'I': 7, 'II': 19, 'III': 31, 'IV': 6}, 2024: {'I': 7, 'II': 19, 'III': 31, 'IV': 6}}",province counts assigned to each wage_region by year
+interpretation,treatment,main_source,year and wage_region,"Treatment variation is mainly by policy year and minimum-wage region, not by individuals."

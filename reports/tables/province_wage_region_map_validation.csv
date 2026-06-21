@@ -1,0 +1,12 @@
+dataset,check,status,detail
+province_wage_region_map,shape,PASS,rows=441
+province_wage_region_map,province_count,PASS,province_count=63
+province_wage_region_map,year_count,PASS,year_count=7
+province_wage_region_map,year_set,PASS,"years=[2018, 2019, 2020, 2021, 2022, 2023, 2024]"
+province_wage_region_map,duplicate_province_year,PASS,duplicates=0
+province_wage_region_map,missing_wage_region,PASS,missing=0
+province_wage_region_map,invalid_wage_region,PASS,invalid=[]
+province_wage_region_map,panel_keys_not_in_mapping,PASS,count=0; examples=[]
+province_wage_region_map,mapping_keys_not_in_panel,PASS,count=0; examples=[]
+province_wage_region_map,needs_verification_rows_reported,PASS,rows=0
+province_wage_region_map,mixed_district_rows_reported,PASS,rows=385

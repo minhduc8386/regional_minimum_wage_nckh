@@ -1,0 +1,4 @@
+model,n_complete,folds,rmse,mae,r2,note,overall_conclusion
+gradient_boosting_custom,441,5,5.61511085668238,4.469641695799329,0.8096534809201507,Predictive diagnostic only; not a causal estimate.,ML model has at least 10% lower CV RMSE than linear regression; preliminary evidence of non-linearity.
+random_forest_custom,441,5,5.6563639304900635,4.62441270107144,0.8068463328103489,Predictive diagnostic only; not a causal estimate.,ML model has at least 10% lower CV RMSE than linear regression; preliminary evidence of non-linearity.
+linear_regression,441,5,7.367136247015115,5.5462190509773635,0.6723383053540608,Predictive diagnostic only; not a causal estimate.,ML model has at least 10% lower CV RMSE than linear regression; preliminary evidence of non-linearity.

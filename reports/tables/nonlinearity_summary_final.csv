@@ -1,0 +1,10 @@
+variable,relationship_type,lowess_pattern,interpretation,conclusion
+min_wage_nominal,treatment,mildly curved,"LOWESS shows mild curvature, suggesting possible non-linear association.",weak-to-moderate possible non-linearity
+real_min_wage,treatment,mildly curved,"LOWESS shows mild curvature, suggesting possible non-linear association.",weak-to-moderate possible non-linearity
+log_real_min_wage,treatment,visibly curved,"LOWESS departs clearly from a straight line, suggesting non-linear association.",possible non-linearity
+min_wage_growth,treatment,mildly curved,"LOWESS shows mild curvature, suggesting possible non-linear association.",weak-to-moderate possible non-linearity
+unemployment_rate,control,visibly curved,"LOWESS departs clearly from a straight line, suggesting non-linear association.",possible non-linearity
+labour_productivity,control,visibly curved,"LOWESS departs clearly from a straight line, suggesting non-linear association.",possible non-linearity
+trained_labour_rate,control,mildly curved,"LOWESS shows mild curvature, suggesting possible non-linear association.",weak-to-moderate possible non-linearity
+employed_persons,control,visibly curved,"LOWESS departs clearly from a straight line, suggesting non-linear association.",possible non-linearity
+log_employed_persons,control,visibly curved,"LOWESS departs clearly from a straight line, suggesting non-linear association.",possible non-linearity
