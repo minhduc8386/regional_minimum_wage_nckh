@@ -3,3 +3,5 @@ numpy
 openpyxl
 pillow
 pypdf
+statsmodels
+linearmodels
