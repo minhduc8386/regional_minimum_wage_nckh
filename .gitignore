@@ -14,7 +14,15 @@ env/
 # Local-only preserved drafts/old duplicate inputs.
 archive/
 
+# Local literature source copies; cite public DOI/source in reports instead.
+paper/PerezPerez2020.pdf
+paper/paper_2.md
+
 # Temporary outputs/logs.
 *.log
 tmp/
 temp/
+
+# Local paper source copies
+paper/PerezPerez2020*.pdf
+paper/paper_2.md
