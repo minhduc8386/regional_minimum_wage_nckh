@@ -1,0 +1,10 @@
+dataset,check,status,detail
+dml_panel,required_columns,PASS,missing_columns=[]
+dml_panel,shape_rows,PASS,rows=441
+dml_panel,province_count,PASS,province_count=63
+dml_panel,year_range,PASS,"years=[2018, 2019, 2020, 2021, 2022, 2023, 2024]"
+dml_panel,duplicate_province_year,PASS,duplicates=0
+dml_panel,missing_required_values,PASS,"missing={'province': 0, 'year': 0, 'informal_rate': 0, 'real_min_wage': 0, 'log_real_min_wage': 0, 'min_wage_growth': 0, 'unemployment_rate': 0, 'labour_productivity': 0, 'trained_labour_rate': 0, 'log_employed_persons': 0}"
+dml_panel,variation_real_min_wage,PASS,unique_values=28
+dml_panel,variation_log_real_min_wage,PASS,unique_values=28
+dml_panel,variation_min_wage_growth,PASS,unique_values=23

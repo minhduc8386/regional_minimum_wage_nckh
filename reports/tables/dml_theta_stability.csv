@@ -1,0 +1,4 @@
+treatment,theta_mean,theta_std,theta_min,theta_max,share_positive,share_negative,stable_sign,avg_p_value,share_ci_contains_zero,interpretation
+real_min_wage,-1.0144123199199714e-05,3.92059421728973e-06,-1.5765518335762782e-05,-6.366341022951714e-06,0.0,1.0,True,0.0324809194731791,0.3333333333333333,"Theta is relatively stable across learners/seeds, but remains a robustness check, not causal proof."
+log_real_min_wage,-33.33664795357962,12.3547830521612,-51.14469789732654,-21.414173947982597,0.0,1.0,True,0.029316445500295527,0.2222222222222222,"Theta is relatively stable across learners/seeds, but remains a robustness check, not causal proof."
+min_wage_growth,-67.99134006945287,59.445700522099244,-144.17748097006609,54.28749370837191,0.1111111111111111,0.8888888888888888,False,0.3796648786723946,1.0,Theta changes sign across learners/seeds; treat as unstable exploratory evidence.
