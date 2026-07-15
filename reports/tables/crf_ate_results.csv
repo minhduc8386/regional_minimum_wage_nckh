@@ -1,0 +1,4 @@
+treatment,role,seed,ate,ci_lower,ci_upper,ci_contains_zero,n_obs,estimator,note
+log_real_min_wage,main,42,-17.209492225455264,-37.8365750302948,3.417590579384264,True,441,"CausalForestDML(1000 trees, leaf>=10, cv=5 GroupKFold by province)","average marginal effect, exploratory; selection-on-observables, W=controls+year dummies"
+real_min_wage,robustness,42,-4.854265033874939e-06,-1.1369294504495624e-05,1.6607644367457469e-06,True,441,"CausalForestDML(1000 trees, leaf>=10, cv=5 GroupKFold by province)","average marginal effect, exploratory; selection-on-observables, W=controls+year dummies"
+min_wage_growth,exploratory,42,53.08155886644865,-1970.7070379707532,2076.8701557036566,True,441,"CausalForestDML(1000 trees, leaf>=10, cv=5 GroupKFold by province)","average marginal effect, exploratory; selection-on-observables, W=controls+year dummies"

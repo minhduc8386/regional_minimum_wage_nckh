@@ -1,0 +1,7 @@
+treatment,model,pdp_range_pp,monotonic_decreasing,departure_from_linear,note
+log_real_min_wage,random_forest,1.7814197428223366,False,0.3611277617488535,"predictive surface only, not a treatment effect"
+log_real_min_wage,gradient_boosting,4.219432349433104,False,0.3482264354498993,"predictive surface only, not a treatment effect"
+real_min_wage,random_forest,1.7814197428223366,False,0.36187002287999287,"predictive surface only, not a treatment effect"
+real_min_wage,gradient_boosting,4.219432349433104,False,0.3607599841677227,"predictive surface only, not a treatment effect"
+min_wage_growth,random_forest,0.32550929651053195,False,0.534122416199185,"predictive surface only, not a treatment effect"
+min_wage_growth,gradient_boosting,1.4935133665838727,False,0.5353954138004942,"predictive surface only, not a treatment effect"

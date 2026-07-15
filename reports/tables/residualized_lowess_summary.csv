@@ -1,0 +1,7 @@
+treatment,role,spec,partial_slope,sd_resid_D,sd_resid_Y,share_D_variance_absorbed,lowess_departure_ratio,conclusion,note
+log_real_min_wage,main,w_year,-48.18477118087013,0.0586638018532004,7.697825632365439,0.6670103518977838,0.2747998406324508,visible curvature,partial association after controls; not a causal dose-response
+real_min_wage,robustness,w_year,-1.488838826481035e-05,195472.5298135447,7.697825632365439,0.6873144052158096,0.3124982501532805,visible curvature,partial association after controls; not a causal dose-response
+min_wage_growth,exploratory,w_year,7.604845880726393,0.0009568410666850821,7.697825632365439,0.995378420723276,0.15795150522890714,visible curvature,partial association after controls; not a causal dose-response
+log_real_min_wage,main,w_year_province,13.325088427199773,0.017620932521193802,1.979636346223214,0.9699566679042195,0.1266110553591689,mild curvature,partial association after controls; not a causal dose-response
+real_min_wage,robustness,w_year_province,3.68823384807856e-06,59759.41727806322,1.979636346223214,0.9707753637280452,0.11737634946466675,mild curvature,partial association after controls; not a causal dose-response
+min_wage_growth,exploratory,w_year_province,-18.149606619593154,0.0009541000318655372,1.979636346223214,0.995404861404937,0.12148501427569451,mild curvature,partial association after controls; not a causal dose-response

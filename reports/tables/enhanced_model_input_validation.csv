@@ -1,0 +1,27 @@
+check,status,value,requirement,note
+required_columns_present,PASS,all present,"Y, D, W, keys, wage_region all in panel",
+n_obs,PASS,441,441 obs (63 provinces x 7 years),
+n_provinces,PASS,63,63,
+years,PASS,2018-2024,2018-2024,
+duplicate_province_year,PASS,0,0 duplicates,
+balanced_panel,PASS,"min=7, max=7",every province has 7 years,
+missing[informal_rate],PASS,0,0 missing,
+missing[real_min_wage],PASS,0,0 missing,
+missing[log_real_min_wage],PASS,0,0 missing,
+missing[min_wage_growth],PASS,0,0 missing,
+missing[unemployment_rate],PASS,0,0 missing,
+missing[labour_productivity],PASS,0,0 missing,
+missing[trained_labour_rate],PASS,0,0 missing,
+missing[log_employed_persons],PASS,0,0 missing,
+informal_rate_range,PASS,"[28.39, 91.12]",0-100 (percentage points),
+real_min_wage_positive,PASS,"[2760000, 4165614]",> 0 VND/month,
+log_real_min_wage_consistent,PASS,True,log_real_min_wage == ln(real_min_wage),
+min_wage_growth_base_year,PASS,True,2018 = 0 (base year),growth is year-over-year change of log real wage
+variation[real_min_wage],PASS,"sd=3.5e+05, within-year sd=3.47e+05, within-province sd=7.539e+04, n_unique=28",non-degenerate variation,within-year variation comes from 4 wage regions; within-province from time changes
+variation[log_real_min_wage],PASS,"sd=0.1018, within-year sd=0.1009, within-province sd=0.02237, n_unique=28",non-degenerate variation,within-year variation comes from 4 wage regions; within-province from time changes
+variation[min_wage_growth],PASS,"sd=0.01409, within-year sd=0.0009614, within-province sd=0.01409, n_unique=23",non-degenerate variation,within-year variation comes from 4 wage regions; within-province from time changes
+scale[unemployment_rate],PASS,"mean=2.36, sd=1.32, range=[0.08, 9.41]",documented for learner scaling,
+scale[labour_productivity],PASS,"mean=147, sd=91.8, range=[41.9, 676]",documented for learner scaling,
+scale[trained_labour_rate],PASS,"mean=22.5, sd=8.39, range=[8.2, 53.9]",documented for learner scaling,
+scale[log_employed_persons],PASS,"mean=6.51, sd=0.59, range=[4.94, 8.47]",documented for learner scaling,
+employed_vs_log_not_both,PASS,"corr(level, exp(log))=1.0000",main spec must use only log_employed_persons,level variable exists in panel but is excluded from W
