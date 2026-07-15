@@ -1,0 +1,14 @@
+role,variable,status,definition,unit_or_scale,use_in_main_spec,notes
+Y,informal_rate,main_outcome,Informal employment rate at province-year level,percentage points,yes,Aggregate outcome; do not interpret as individual-worker-level effect.
+D,log_real_min_wage,main_treatment,Log of CPI-adjusted regional minimum wage,log VND/month,yes,Preferred treatment for main reporting because it reduces scale issues.
+D,real_min_wage,robustness_treatment,CPI-adjusted regional minimum wage with 2018 CPI base,VND/month,no,Use as robustness treatment in level wage scale.
+D,min_wage_growth,exploratory_treatment,Growth rate of real minimum wage by wage region over time,proportion,no,Do not present as main treatment because DML theta is unstable and TWFE evidence is weak.
+policy_reference,min_wage_nominal,reference_variable,Nominal regional minimum wage before CPI adjustment,VND/month,no,Use for policy context and treatment construction only.
+W,unemployment_rate,main_control,Province-year unemployment rate,percentage points,yes,Main control.
+W,labour_productivity,main_control,Province-year labour productivity,local data unit,yes,Main control.
+W,trained_labour_rate,main_control,Share/rate of trained labour at province-year level,percentage points,yes,Main control.
+W,log_employed_persons,main_control,Log of employed persons,log persons,yes,Main employment-scale control.
+W,employed_persons,robustness_control,Number of employed persons,persons,no,Use only as robustness alternative to log_employed_persons; do not include both together.
+FE,province,main_fixed_effect,Province fixed effects,category,yes,Absorbs time-invariant province characteristics.
+FE,year,main_fixed_effect,Year fixed effects,category,yes,Absorbs common shocks by year.
+SE,province,cluster,Cluster standard errors by province,category,yes,Accounts for within-province serial correlation.

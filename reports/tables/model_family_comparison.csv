@@ -1,0 +1,7 @@
+model_family,specific_model_or_status,main_treatment,current_estimate,p_value_or_status,main_role,interpretation,caution
+OLS,pooled_ols_controls,log_real_min_wage,-44.839,0.0035,descriptive_baseline,"Negative conditional association in pooled data.","Mixes cross-province and within-province variation; not a main causal estimate."
+FE,province_fe_controls,log_real_min_wage,13.914,0.0034,within_province_baseline,"Positive within-province association after absorbing province fixed effects.","Does not absorb common year shocks."
+FE,year_fe_controls,log_real_min_wage,-48.185,0.0039,common_shock_adjusted_baseline,"Negative association after absorbing year fixed effects.","Does not absorb time-invariant province heterogeneity."
+TWFE,two_way_fe_controls,log_real_min_wage,13.325,0.0375,main_linear_panel_benchmark,"Positive association after province and year fixed effects.","Still a linear baseline association, not final causal proof."
+DML,partialling_out_stability_mean,log_real_min_wage,-33.337,0.0293,flexible_control_robustness,"Stable negative theta across learners, seeds, and most folds.","Opposite sign from TWFE; current DML has no full province FE in nuisance functions and uses row-level folds."
+CRF,intentionally_left_blank,not_applicable,not_available,not_available,left_blank,"CRF has not been implemented in the current repo.","Do not report or interpret CRF results."

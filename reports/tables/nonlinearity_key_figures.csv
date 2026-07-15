@@ -1,0 +1,6 @@
+priority,figure,variable,role,reason
+1,reports/figures/nonlinearity_final/lowess_informal_rate_vs_log_real_min_wage.png,log_real_min_wage,main_treatment,Main treatment variable with visible curvature.
+2,reports/figures/nonlinearity_final/lowess_informal_rate_vs_real_min_wage.png,real_min_wage,robustness_treatment,Robustness treatment in level scale.
+3,reports/figures/nonlinearity_final/lowess_informal_rate_vs_unemployment_rate.png,unemployment_rate,control,Key labour-market control with visible curvature.
+4,reports/figures/nonlinearity_final/lowess_informal_rate_vs_labour_productivity.png,labour_productivity,control,Key economic control with visible curvature.
+5,reports/figures/nonlinearity_final/lowess_informal_rate_vs_log_employed_persons.png,log_employed_persons,main_control,Main employment-scale control with visible curvature.

@@ -22,12 +22,4 @@ paper/paper_2.md
 *.log
 tmp/
 temp/
-<<<<<<< HEAD
-AGENTS.md
-cr7.xlsx
-=======
 
-# Local paper source copies
-paper/PerezPerez2020*.pdf
-paper/paper_2.md
->>>>>>> origin/main

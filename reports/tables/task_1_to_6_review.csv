@@ -1,0 +1,7 @@
+task,output_files,status,review
+1_specification_y_d_w,"reports/specification_y_d_w.md; reports/tables/specification_y_d_w.csv",complete,"Y, D, W, FE, and inference choices are documented clearly."
+2_nonlinearity_evidence,"reports/nonlinearity_evidence.md; reports/tables/nonlinearity_key_figures.csv",complete,"LOWESS and ML evidence are correctly treated as diagnostics, not causal evidence."
+3_why_linear_ols_may_be_limited,"reports/why_linear_ols_may_be_limited.md",complete,"Explains functional-form limits while preserving OLS/FE/TWFE as necessary baselines."
+4_dml_theta_stability,"reports/dml_theta_convergence_interpretation.md; reports/tables/dml_theta_convergence_interpretation.csv",complete,"Shows stable DML direction for level/log treatments and weak evidence for growth treatment."
+5_dml_treatment_choice,"reports/dml_treatment_choice.md; reports/tables/dml_treatment_choice.csv",complete,"Selects log_real_min_wage as main DML treatment, real_min_wage as robustness, and min_wage_growth as exploratory."
+6_model_family_comparison,"reports/model_family_comparison.md; reports/tables/model_family_comparison.csv",complete,"Compares OLS/FE/TWFE and DML by role; leaves CRF blank because it has not been implemented."
