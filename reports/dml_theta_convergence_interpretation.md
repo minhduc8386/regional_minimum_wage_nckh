@@ -1,60 +1,99 @@
-# DML Theta Stability and Convergence Interpretation
+# DML Theta Stability After Enhanced Checks
 
 ## Purpose
 
-This note reviews whether the DML treatment coefficient estimates are stable across learners, seeds, and cross-fitting folds. The goal is to decide how much weight to place on the DML results in the research narrative.
+This note updates the DML interpretation after the main branch added K-fold sweeps and a DML variant with province dummies. The goal is to decide how much weight to place on DML in the research narrative.
 
-The DML results should be interpreted as a flexible-control robustness diagnostic, not as stand-alone causal proof.
+DML remains a flexible-control robustness exercise, not a stand-alone causal design.
 
-## Main Interpretation
+## Main Update
 
-| Treatment | Stability assessment | Recommended role |
-|---|---|---|
-| `real_min_wage` | Stable negative direction across main runs, with some uncertainty in confidence intervals. | Robustness check for the level treatment. |
-| `log_real_min_wage` | Most coherent DML signal: stable negative direction across main runs and folds, but different sign from TWFE. | Preferred DML treatment for robustness discussion, with caution. |
-| `min_wage_growth` | Unstable across folds and statistically weak. | Exploratory only, not a main DML treatment. |
+The earlier DML result showed a relatively stable negative theta for `log_real_min_wage`. The enhanced results confirm that this negative sign is relatively stable across learners, seeds, folds, and K choices when the nuisance functions include W controls and year dummies. This should not be described as convergence proof.
 
-## Evidence by Treatment
+However, the new DML variant with province dummies changes the interpretation. When province dummies are added, the theta becomes much smaller, statistically weak, and sign-unstable across learners. This means the original DML result is closer to a year-FE / between-province-flexible-control design than to a TWFE-comparable within-province design.
 
-### `real_min_wage`
-
-Across the main DML runs, the estimated theta is consistently negative. The average theta is approximately `-0.000010`, and all 9 main estimates are negative. Across fold-level estimates, 44 out of 45 estimates are negative.
-
-This indicates reasonably stable directional evidence. However, 3 out of 9 main confidence intervals include zero, and the magnitude varies by learner. The ridge learner gives a more negative estimate than the tree-based learners. This means the sign is stable, but the exact magnitude should not be overinterpreted.
+## Treatment-by-Treatment Interpretation
 
 ### `log_real_min_wage`
 
-This is the most coherent DML specification. The average theta is approximately `-33.34`, all 9 main estimates are negative, and 44 out of 45 fold-level estimates are negative. The average p-value is about `0.029`, and 2 out of 9 main confidence intervals include zero.
+Main DML with W + year dummies:
 
-This supports using `log_real_min_wage` as the main DML treatment in the robustness narrative. However, the DML estimate has the opposite sign from the TWFE baseline. That disagreement is substantively important and should be presented as evidence that the estimated association is sensitive to model specification, not as a clean causal conclusion.
+- 100 percent of the 9 main runs are negative.
+- 98 percent of the 45 fold-level estimates are negative.
+- K=2, K=5, and K=10 sweeps all show 100 percent negative signs.
+- Average p-value is approximately `0.0293`.
+- The theta range across the main 9 runs is approximately `[-51.14, -21.41]`.
+
+This is a relatively stable negative DML signal, not convergence proof.
+
+But DML with province dummies:
+
+- Average theta is approximately `-1.87`.
+- Average p-value is approximately `0.3096`.
+- Signs are mixed across learners.
+- Confidence intervals contain zero in about 78 percent of runs.
+- The method-comparison note reports that about 95 percent of treatment variation is between-province, leaving little within-province variation.
+
+Interpretation:
+
+`log_real_min_wage` remains the preferred DML treatment, but the result must be described as flexible-control robustness using mainly between-province variation. It conflicts with TWFE and weakens when made more TWFE-comparable.
+
+### `real_min_wage`
+
+Main DML with W + year dummies:
+
+- 100 percent of the 9 main runs are negative.
+- 98 percent of the 45 fold-level estimates are negative.
+- K=2, K=5, and K=10 sweeps all show 100 percent negative signs.
+- Average p-value is approximately `0.0325`.
+
+DML with province dummies:
+
+- Average theta is approximately `-5.97e-07`.
+- Average p-value is approximately `0.3386`.
+- Signs are mixed.
+- Confidence intervals contain zero in about 89 percent of runs.
+
+Interpretation:
+
+The level treatment confirms the same pattern as the log treatment: relatively stable negative DML without province dummies, but weak/mixed once province dummies are included.
 
 ### `min_wage_growth`
 
-The growth treatment is not stable. Although 8 out of 9 main DML estimates are negative, all 9 main confidence intervals include zero. At the fold level, only 30 out of 45 estimates are negative and 15 are positive. The fold-level dispersion is also much larger than for the level and log-level treatments.
+Main DML:
 
-This means `min_wage_growth` should not be used as the main DML treatment. It may still be reported as an exploratory robustness check, but the correct interpretation is weak and unstable evidence.
+- 89 percent of the 9 main runs are negative.
+- Only 67 percent of fold-level estimates are negative.
+- K sweeps show only 56 percent negative signs.
+- Average p-value is approximately `0.3797`.
+- Confidence intervals contain zero in all main runs.
 
-## Methodological Caveats
+Interpretation:
 
-Several caveats should be stated clearly in the paper or report:
+`min_wage_growth` remains exploratory only. It should not be a main treatment.
 
-- The current DML implementation is a robustness diagnostic for flexible controls, not a complete causal design.
-- The sample is small for machine-learning-based causal estimation: 441 province-year observations.
-- The current DML setup does not include full province fixed effects in the nuisance functions.
-- Cross-fitting is implemented at the row level, not as grouped folds by province.
-- DML estimates should be compared with OLS/FE/TWFE results rather than replacing them.
+## Research Implication
+
+The updated DML results strengthen, rather than weaken, the cautious interpretation:
+
+- DML without province dummies is relatively stable and negative.
+- TWFE is positive for `log_real_min_wage`.
+- DML with province dummies is weak and mixed.
+
+Therefore, the key conclusion is not "DML proves a negative effect." The key conclusion is:
+
+> The estimated relationship is sensitive to variation source and model specification.
 
 ## Suggested Paper Wording
 
-The DML stability check indicates that the level and log-level minimum wage treatments produce consistently negative theta estimates across learners, random seeds, and most cross-fitting folds. The log real minimum wage specification is the most stable DML result. However, this DML estimate differs in sign from the TWFE baseline, and the sample is small for flexible causal estimation. Therefore, the DML results are best interpreted as robustness evidence that the estimated relationship is sensitive to functional-form and control-function choices, rather than as definitive causal evidence.
+The DML robustness check produces stable negative estimates for the log real minimum wage when the nuisance functions include observed controls and year dummies. This stability holds across learners, seeds, folds, and K choices. However, when province dummies are added to make the DML specification closer to a within-province design, the estimate becomes small, statistically weak, and sign-unstable. This indicates that the DML signal relies heavily on between-province variation and should be interpreted as a flexible-control robustness diagnostic rather than as definitive causal evidence.
 
 ## Source Files Used
 
 - `reports/tables/dml_main_results.csv`
 - `reports/tables/dml_theta_stability.csv`
 - `reports/tables/dml_theta_by_fold.csv`
-- `reports/tables/dml_theta_by_seed.csv`
-- `reports/tables/dml_theta_by_learner.csv`
-- `reports/dml_results_summary.md`
-- `reports/decision_note_dml.md`
-
+- `reports/tables/dml_theta_by_k.csv`
+- `reports/tables/dml_convergence_interpretation.csv`
+- `reports/tables/dml_theta_province_fe.csv`
+- `reports/tables/method_comparison_summary.csv`

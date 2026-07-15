@@ -1,94 +1,110 @@
 # Nonlinearity Evidence
 
-## 1. Purpose
+## Purpose
 
-This note summarizes the existing evidence that the relationship between `informal_rate` and the main policy/control variables may be nonlinear.
+This section consolidates the nonlinearity evidence from the original LOWESS diagnostics and the enhanced diagnostics added in the latest main-branch update. All evidence here is diagnostic. It motivates flexible robustness checks, but it does not provide causal evidence.
 
-The purpose is diagnostic. LOWESS plots and predictive model comparison are used to understand the shape of the data and motivate flexible-control robustness checks. They should not be interpreted as causal evidence.
+## Evidence Sources
 
-## 2. Source Files
+The section uses four groups of evidence:
 
-The evidence comes from existing project outputs:
+1. Raw LOWESS plots from the original nonlinearity diagnostics.
+2. Residualized LOWESS from `reports/tables/residualized_lowess_summary.csv`.
+3. Formal nonlinearity tests from `reports/tables/nonlinearity_formal_tests.csv`.
+4. Partial dependence plots from `reports/tables/pdp_summary.csv` and `reports/figures/pdp/`.
 
-- `reports/tables/nonlinearity_summary_final.csv`
-- `reports/tables/model_comparison_linear_vs_ml_final.csv`
+## Raw LOWESS
+
+The original LOWESS diagnostics show visible curvature in the relationship between `informal_rate` and:
+
+- `log_real_min_wage`
+- `unemployment_rate`
+- `labour_productivity`
+- `employed_persons`
+- `log_employed_persons`
+
+This suggests that a purely linear additive model may be restrictive in the full province-year panel.
+
+## Residualized LOWESS
+
+The residualized LOWESS results are especially useful because they ask whether curvature remains after partialling out controls and fixed-effect structures.
+
+For the DML-like specification with W controls and year effects:
+
+| treatment | spec | partial slope | LOWESS departure ratio | conclusion |
+|---|---|---:|---:|---|
+| `log_real_min_wage` | W + year | `-48.18` | `0.275` | visible curvature |
+| `real_min_wage` | W + year | `-1.49e-05` | `0.312` | visible curvature |
+| `min_wage_growth` | W + year | `7.60` | `0.158` | visible curvature |
+
+For the TWFE-like residualized specification with W controls, year effects, and province effects:
+
+| treatment | spec | partial slope | LOWESS departure ratio | conclusion |
+|---|---|---:|---:|---|
+| `log_real_min_wage` | W + year + province | `13.33` | `0.127` | mild curvature |
+| `real_min_wage` | W + year + province | `3.69e-06` | `0.117` | mild curvature |
+| `min_wage_growth` | W + year + province | `-18.15` | `0.121` | mild curvature |
+
+Interpretation:
+
+Curvature is clearer in the DML-like specification than in the TWFE-like specification. This suggests that province fixed effects absorb part of the nonlinear structure.
+
+## Formal Tests
+
+The formal tests reinforce the functional-form concern.
+
+RESET rejects linearity for all six tested treatment/specification combinations:
+
+- `log_real_min_wage`, pooled: p approximately `0.000076`
+- `log_real_min_wage`, year FE: p approximately `0.000066`
+- `log_real_min_wage`, TWFE: p approximately `0.00345`
+- `real_min_wage`, pooled: p approximately `0.000036`
+- `real_min_wage`, year FE: p approximately `0.000028`
+- `real_min_wage`, TWFE: p approximately `0.00343`
+
+However, the squared treatment-only tests are not strong. The stronger evidence in pooled and year-FE specifications comes from squared controls and joint W nonlinearities. This matters for interpretation:
+
+> The main nonlinearity appears to be concentrated in the nuisance relationship between W and Y, rather than in a simple quadratic treatment effect.
+
+This is exactly the setting where DML is useful as a robustness check: it can flexibly learn nuisance functions such as `E[Y|W]` and `E[D|W]`.
+
+## PDP Evidence
+
+The PDP outputs show non-flat predictive surfaces, but they should be read only as prediction diagnostics.
+
+For `log_real_min_wage`:
+
+- Random Forest PDP range is about `1.78` percentage points.
+- Gradient Boosting PDP range is about `4.22` percentage points.
+- The PDP is not monotonic decreasing.
+
+For `min_wage_growth`, PDP ranges are smaller or noisier and should not be used as treatment-effect evidence.
+
+## Recommended Figures
+
+Use 3-5 figures in the paper or appendix. Recommended choices:
+
+1. `reports/figures/nonlinearity_final/lowess_informal_rate_vs_log_real_min_wage.png`
+2. `reports/figures/nonlinearity_residualized/residualized_lowess_log_real_min_wage_w_year.png`
+3. `reports/figures/nonlinearity_residualized/residualized_lowess_log_real_min_wage_w_year_province.png`
+4. `reports/figures/pdp/pdp_log_real_min_wage_random_forest.png`
+5. `reports/figures/pdp/pdp_log_real_min_wage_gradient_boosting.png`
+
+If the body is short, include only the first three and move PDP figures to appendix.
+
+## Conclusion
+
+The nonlinearity evidence supports the following statement:
+
+> Linear OLS/FE/TWFE models remain necessary transparent baselines, but the diagnostics suggest that the nuisance relationship between controls and informal employment is nonlinear. DML is therefore a reasonable robustness check for flexible control adjustment. This does not mean OLS is wrong, and it does not mean DML is causal proof.
+
+## Source Files Used
+
+- `reports/tables/residualized_lowess_summary.csv`
+- `reports/tables/nonlinearity_formal_tests.csv`
+- `reports/tables/pdp_summary.csv`
+- `reports/tables/feature_importance.csv`
 - `reports/figures/nonlinearity_final/`
+- `reports/figures/nonlinearity_residualized/`
+- `reports/figures/pdp/`
 
-The underlying dataset is:
-
-```text
-data/processed/final/analysis_panel_2018_2024.csv
-```
-
-The panel has 441 province-year observations from 63 provinces/cities over 2018-2024.
-
-## 3. LOWESS Evidence
-
-LOWESS diagnostics suggest that several bivariate relationships are not well approximated by a straight line.
-
-Variables with visibly curved LOWESS patterns:
-
-| variable | group | LOWESS pattern | interpretation |
-|---|---|---|---|
-| `log_real_min_wage` | treatment | visibly curved | Nonlinear association with `informal_rate` is visually clear. |
-| `unemployment_rate` | control | visibly curved | Nonlinear association with `informal_rate` is visually clear. |
-| `labour_productivity` | control | visibly curved | Nonlinear association with `informal_rate` is visually clear. |
-| `employed_persons` | control | visibly curved | Nonlinear association with `informal_rate` is visually clear. |
-| `log_employed_persons` | control | visibly curved | Nonlinear association with `informal_rate` is visually clear. |
-
-Variables with mildly curved LOWESS patterns:
-
-| variable | group | LOWESS pattern | interpretation |
-|---|---|---|---|
-| `min_wage_nominal` | policy reference | mildly curved | Weak-to-moderate possible nonlinearity. |
-| `real_min_wage` | treatment | mildly curved | Weak-to-moderate possible nonlinearity. |
-| `min_wage_growth` | treatment | mildly curved | Weak-to-moderate possible nonlinearity. |
-| `trained_labour_rate` | control | mildly curved | Weak-to-moderate possible nonlinearity. |
-
-The most important point for the research narrative is that `log_real_min_wage`, `unemployment_rate`, `labour_productivity`, and employment-scale variables show visible departures from a simple linear pattern.
-
-## 4. Predictive Model Comparison
-
-The predictive diagnostic compares Linear Regression with custom Random Forest and Gradient Boosting models using five-fold cross-validation.
-
-| model | n | folds | RMSE | MAE | R2 |
-|---|---:|---:|---:|---:|---:|
-| Gradient Boosting custom | 441 | 5 | 5.615 | 4.470 | 0.810 |
-| Random Forest custom | 441 | 5 | 5.656 | 4.624 | 0.807 |
-| Linear Regression | 441 | 5 | 7.367 | 5.546 | 0.672 |
-
-Relative to Linear Regression:
-
-- Gradient Boosting reduces RMSE by about 23.8%.
-- Random Forest reduces RMSE by about 23.2%.
-
-This suggests that flexible predictive models capture empirical patterns in `informal_rate` that the linear benchmark misses.
-
-## 5. Figures to Show
-
-The most useful figures for the report are:
-
-| priority | figure | reason |
-|---:|---|---|
-| 1 | `reports/figures/nonlinearity_final/lowess_informal_rate_vs_log_real_min_wage.png` | Main treatment variable with visible curvature. |
-| 2 | `reports/figures/nonlinearity_final/lowess_informal_rate_vs_real_min_wage.png` | Robustness treatment in level scale. |
-| 3 | `reports/figures/nonlinearity_final/lowess_informal_rate_vs_unemployment_rate.png` | Key labour-market control with visible curvature. |
-| 4 | `reports/figures/nonlinearity_final/lowess_informal_rate_vs_labour_productivity.png` | Key economic control with visible curvature. |
-| 5 | `reports/figures/nonlinearity_final/lowess_informal_rate_vs_log_employed_persons.png` | Main employment-scale control with visible curvature. |
-
-These figures are enough for the main text. The remaining LOWESS plots can be kept as appendix or supporting diagnostics.
-
-## 6. Suggested Narrative
-
-The diagnostic results suggest that a purely linear specification may be restrictive for this province-year panel. LOWESS plots show visible curvature for `log_real_min_wage` and several important controls, especially unemployment, labour productivity, and employment scale. In addition, flexible predictive models such as Random Forest and Gradient Boosting reduce cross-validated RMSE by more than 20% relative to Linear Regression.
-
-This does not mean that OLS, FE, or TWFE are invalid. These models remain necessary as transparent baseline specifications. The point is narrower: the data show enough nonlinear structure to justify robustness checks that allow more flexible nuisance functions, such as DML.
-
-## 7. Interpretation Guardrails
-
-Do not overstate this evidence:
-
-- LOWESS is descriptive and bivariate; it does not control for all confounders.
-- Random Forest and Gradient Boosting are predictive diagnostics; they do not estimate causal effects.
-- Lower RMSE or higher R2 does not imply that minimum wage changes cause changes in informal employment.
-- Nonlinearity evidence motivates flexible specifications, but it does not replace a credible identification strategy.

@@ -1,167 +1,159 @@
 # Y-D-W Specification
 
-## 1. Purpose
+## Purpose
 
-This note fixes the outcome, treatment, and control specification used in the current project.
+This note fixes the outcome, treatment, control, unit, and fixed-effect structure used in the current project.
 
-The specification is designed for the 2018-2024 province-year panel. It supports the baseline OLS/FE/TWFE models and the DML robustness exercise, but it should not be interpreted as a complete causal identification strategy by itself.
+The specification is designed for the Vietnam province-year panel from 2018 to 2024. It supports transparent baseline models and flexible robustness checks, but it does not by itself create a clean causal identification strategy.
 
-## 2. Analysis Unit and Sample
+## Analysis Unit
 
-Data file:
+| item | specification |
+|---|---|
+| Unit | province-year |
+| Period | 2018-2024 |
+| Observations | 441 |
+| Provinces/cities | 63 |
+| Years | 7 |
+| Panel status | balanced |
+| Duplicate province-year rows | none |
+| Required-variable missing values | none |
+
+Source panel:
 
 ```text
 data/processed/final/analysis_panel_2018_2024.csv
 ```
 
-Analysis unit:
+Validation source:
 
-- Province-year.
+```text
+reports/tables/enhanced_model_input_validation.csv
+```
 
-Sample:
+## Outcome Y
 
-- 441 observations.
-- 63 provinces/cities.
-- Seven years, 2018-2024.
-- No duplicate `province-year` rows.
-- No missing values in the required Y-D-W variables.
-
-## 3. Outcome Y
-
-Main outcome:
-
-| role | variable | definition | unit / scale | use |
+| role | variable | definition | unit | use |
 |---|---|---|---|---|
-| Y | `informal_rate` | Informal employment rate at province-year level. | Percentage points | Main outcome in all baseline and DML specifications. |
+| Y | `informal_rate` | Informal employment rate at province-year level | percentage points | Main outcome |
 
-`informal_rate` is an aggregate province-year outcome. Results should not be interpreted as individual-worker-level effects.
+Interpretation guardrail:
 
-## 4. Treatment D
+`informal_rate` is an aggregate province-year measure. The estimates should not be interpreted as individual-worker transition effects.
 
-The treatment hierarchy is:
+## Treatment D
 
-| role | variable | status | definition | use |
+| role | variable | definition | unit | use |
 |---|---|---|---|---|
-| D main | `log_real_min_wage` | Main treatment | Log of CPI-adjusted regional minimum wage. | Preferred treatment for interpretation because it reduces scale issues and is easier to compare across specifications. |
-| D robustness | `real_min_wage` | Robustness treatment | CPI-adjusted regional minimum wage, 2018 base. | Used to check whether conclusions are similar in the level wage scale. |
-| D exploratory | `min_wage_growth` | Exploratory treatment | Growth rate of `real_min_wage` by wage region over time; 2018 is filled as 0. | Reported as a secondary check, not as the main treatment, because DML theta is unstable and two-way FE evidence is weak. |
+| Main D | `log_real_min_wage` | Log of CPI-adjusted regional minimum wage | log VND/month | Main treatment for reporting and DML interpretation |
+| Main D | `real_min_wage` | CPI-adjusted regional minimum wage, 2018 base | VND/month | Main robustness treatment in level scale |
+| Exploratory D | `min_wage_growth` | Year-over-year growth of real minimum wage by wage region | proportion | Exploratory only |
 
-Additional policy reference variable:
+`log_real_min_wage` is preferred in the main text because it is easier to interpret proportionally. `real_min_wage` remains a main treatment family member because it measures the same policy exposure in level form and is useful for robustness.
+
+`min_wage_growth` is not a main treatment. The enhanced validation shows that its within-year standard deviation is extremely small relative to its overall/time variation:
+
+```text
+sd = 0.01409
+within-year sd = 0.0009614
+within-province sd = 0.01409
+n_unique = 23
+```
+
+This means `min_wage_growth` is driven strongly by time changes common across wage regions. Once year dummies enter the model, much of the useful variation is absorbed. Empirically, its TWFE and DML results are weak or unstable:
+
+- TWFE p-value is approximately `0.7656`.
+- DML average p-value is approximately `0.3797`.
+- DML K-sweep share negative is only `56%`.
+- Main DML confidence intervals contain zero in `100%` of runs.
+
+Therefore, `min_wage_growth` should be reported only as exploratory or appendix robustness.
+
+## Controls W
+
+The main control set contains four variables:
 
 | role | variable | definition | use |
 |---|---|---|---|
-| Policy reference | `min_wage_nominal` | Nominal regional minimum wage before CPI adjustment. | Used for treatment construction and descriptive/policy context, not as the main causal treatment. |
-
-Rationale:
-
-- `log_real_min_wage` and `real_min_wage` are the main minimum-wage exposure measures.
-- `log_real_min_wage` is preferred for the main specification because it handles scale more naturally than the raw VND level.
-- `real_min_wage` remains important as a robustness treatment because it is directly interpretable in VND/month.
-- `min_wage_growth` should not be presented as the main treatment because the DML stability results show sign instability and confidence intervals often include zero.
-
-## 5. Controls W
-
-Main control set:
-
-| role | variable | definition | use |
-|---|---|---|---|
-| W | `unemployment_rate` | Province-year unemployment rate. | Main control. |
-| W | `labour_productivity` | Province-year labour productivity. | Main control. |
-| W | `trained_labour_rate` | Share/rate of trained labour at province-year level. | Main control. |
-| W | `log_employed_persons` | Log of employed persons. | Main employment-scale control. |
+| W | `unemployment_rate` | province-year unemployment rate | labor-market condition |
+| W | `labour_productivity` | province-year labor productivity | economic structure/productivity |
+| W | `trained_labour_rate` | province-year trained labor share/rate | human-capital control |
+| W | `log_employed_persons` | log employed persons | employment-scale control |
 
 Available robustness control:
 
-| role | variable | definition | use |
-|---|---|---|---|
-| W robustness | `employed_persons` | Number of employed persons. | Used only as robustness alternative to `log_employed_persons`. |
+| role | variable | use |
+|---|---|---|
+| W robustness | `employed_persons` | Alternative to `log_employed_persons` |
 
-Specification rule:
+Rule:
 
-- Do not include `employed_persons` and `log_employed_persons` in the same main regression.
-- They represent the same employment scale in level and log form.
-- The main specification uses `log_employed_persons`.
-- Robustness checks can replace `log_employed_persons` with `employed_persons`.
+Do not include `employed_persons` and `log_employed_persons` in the same main regression because they represent the same employment-scale concept in level and log form.
 
-## 6. Fixed Effects and Inference
+## FE Structure By Method
 
-Baseline models should report:
+| method | Y | D | W | fixed effects / dummies | variation emphasized | role |
+|---|---|---|---|---|---|---|
+| Pooled OLS + W | `informal_rate` | one D at a time | 4 controls | none | between + within | descriptive baseline |
+| Year FE + W | `informal_rate` | one D at a time | 4 controls | year FE | between-province net of common shocks | baseline |
+| Province FE + W | `informal_rate` | one D at a time | 4 controls | province FE | within-province over time | baseline |
+| TWFE + W | `informal_rate` | one D at a time | 4 controls | province FE + year FE | within-province net of common shocks | main linear panel benchmark |
+| DML original | `informal_rate` | one D at a time | 4 controls + year dummies | year dummies only; no province dummies | mostly between-province / year-FE-like variation | flexible-control robustness |
+| DML + province dummies | `informal_rate` | one D at a time | 4 controls + year dummies + province dummies | province dummies + year dummies | within-province sensitivity | TWFE-comparable robustness |
+| CRF | `informal_rate` | one D at a time | W = controls + year dummies; X = heterogeneity controls | grouped cross-fitting by province; no province dummies in main run | exploratory between-province heterogeneity | heterogeneity diagnostic |
 
-- Pooled OLS without controls.
-- Pooled OLS with controls.
-- Province fixed effects with controls.
-- Year fixed effects with controls.
-- Two-way fixed effects with province and year fixed effects.
+## Inference Rule
 
-Main inference rule:
+For OLS/FE/TWFE:
 
-- Cluster standard errors by province when possible.
+```text
+Cluster standard errors by province.
+```
 
 Reason:
 
-- The data are a province-year panel.
-- Errors may be serially correlated within province over time.
-- Province fixed effects absorb time-invariant province characteristics.
-- Year fixed effects absorb common shocks across all provinces in a given year.
+The data are panel data, and errors may be correlated within province over time.
 
-## 7. DML Specification Link
+For DML/CRF:
 
-For DML, use:
+Use stability diagnostics across learners, seeds, folds, and K choices. Do not describe sign stability as convergence proof.
 
-- Outcome: `informal_rate`.
-- Treatments: `log_real_min_wage`, `real_min_wage`, and `min_wage_growth`, estimated separately.
-- Main controls: `unemployment_rate`, `labour_productivity`, `trained_labour_rate`, `log_employed_persons`.
-- Year dummies can be included in W.
+## Final Specification Summary
 
-DML role:
-
-- DML is a robustness/flexible-control exercise.
-- DML checks whether theta is stable after flexibly partialling out W.
-- DML does not replace a credible causal identification strategy.
-
-Current DML interpretation:
-
-- `log_real_min_wage` and `real_min_wage` have relatively stable negative DML theta across learners/seeds, but some confidence intervals include zero and the signs differ from two-way FE.
-- `min_wage_growth` is exploratory because theta is unstable across learners/seeds and confidence intervals contain zero.
-
-## 8. Interpretation Guardrails
-
-Use the specification as follows:
-
-- Interpret OLS/FE/TWFE as baseline associations, not definitive causal effects.
-- Interpret DML as robustness evidence for flexible controls, not causal proof.
-- Do not say that predictive improvement or nonlinear diagnostics prove causality.
-- Do not present `min_wage_growth` as the primary treatment.
-- Be explicit that the data are aggregate province-year data, not individual microdata.
-- Be explicit that province-level wage-region mapping is an approximation.
-
-## 9. Final Chosen Specification
-
-Main reporting specification:
+Main reporting family:
 
 ```text
 Y = informal_rate
-D_main = log_real_min_wage
-W_main = unemployment_rate + labour_productivity + trained_labour_rate + log_employed_persons
-FE_main = province fixed effects + year fixed effects
-SE = clustered by province
+D_main = log_real_min_wage, real_min_wage
+W = unemployment_rate + labour_productivity + trained_labour_rate + log_employed_persons
+Unit = province-year
+Period = 2018-2024
 ```
 
-Robustness treatment:
+Main linear benchmark:
 
 ```text
-D_robustness = real_min_wage
+TWFE + W
+province FE + year FE
+cluster SE by province
 ```
 
-Exploratory treatment:
+Main flexible robustness:
 
 ```text
-D_exploratory = min_wage_growth
+DML with W + year dummies
 ```
 
-Employment-scale robustness:
+Key sensitivity:
 
 ```text
-Replace log_employed_persons with employed_persons.
-Do not include both in the same main specification.
+DML with W + year dummies + province dummies
 ```
+
+Exploratory:
+
+```text
+min_wage_growth
+CRF heterogeneity diagnostics
+```
+

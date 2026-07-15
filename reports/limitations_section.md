@@ -1,43 +1,38 @@
 # Limitations
 
-## Purpose
-
-This note provides a limitations section for the paper draft. It is written to keep the interpretation scientifically cautious and transparent.
-
-## Suggested Limitation Section
+## Main Limitations
 
 This study has several limitations.
 
-First, the analysis uses an aggregate province-year panel rather than worker-level or firm-level microdata. The panel structure is useful for documenting recent regional patterns, but it cannot observe individual transitions between formal employment, informal employment, unemployment, self-employment, and inactivity. This limits the ability to distinguish labor reallocation mechanisms.
+First, the data are aggregate province-year data rather than worker-level or firm-level microdata. The panel can document regional associations, but it cannot observe individual transitions between formal employment, informal employment, self-employment, unemployment, and inactivity.
 
-Second, the current data do not provide a clean untreated control group. Vietnam's regional minimum wage policy applies nationwide, with provinces exposed through regional wage classifications and intensity differences. This makes a classic binary Difference-in-Differences or event-study design difficult to justify. The estimates should therefore be interpreted as baseline associations and robustness diagnostics rather than as a clean quasi-experimental causal effect.
+Second, the current design does not provide a clean untreated control group. Vietnam's regional minimum wage policy applies nationally, with provinces differing by wage-region exposure and intensity. This makes classic binary Difference-in-Differences and event-study designs difficult to justify.
 
-Third, minimum wage exposure is mapped at the province-year level. In practice, Vietnam's minimum wage regions can vary at more detailed administrative levels, including districts. A province-level mapping may therefore introduce measurement error in treatment assignment, especially for provinces with heterogeneous districts or changes in administrative classification.
+Third, treatment measurement is approximate. Official minimum wage regions can vary by district, while the project maps wage-region exposure at province-year level. For provinces containing districts in multiple wage regions, assigning one wage region to the whole province can introduce measurement error. This likely attenuates or distorts estimated treatment associations.
 
-Fourth, the sample is small for flexible causal machine learning. The panel contains 441 province-year observations, which is limited for DML. Although the DML theta for `log_real_min_wage` is stable across learners, seeds, and most folds, the method should still be treated as a robustness exercise.
+Fourth, within-province treatment variation is thin. The enhanced model outputs indicate that roughly 95% of treatment variation is between provinces or wage-region groups. When province dummies are added to DML, the theta estimate becomes weak and sign-unstable. This limits the strength of within-province causal interpretation.
 
-Fifth, the current DML implementation does not fully reproduce a province fixed-effects design in the nuisance functions. It includes observed controls and year dummies, but province fixed effects are not fully included because of sample-size and overfitting concerns. Cross-fitting is also implemented at the row level rather than as province-grouped folds. These choices should be improved before making stronger causal claims.
+Fifth, the 2018-2024 period includes COVID and post-COVID disruptions, especially 2020-2021. COVID may have affected informal employment, unemployment, labor mobility, firm behavior, and local reporting in ways not fully captured by year fixed effects or available controls.
 
-Sixth, the main estimates are specification-sensitive. Pooled OLS and year-FE models estimate a negative association between `log_real_min_wage` and `informal_rate`, while province-FE and TWFE models estimate a positive association. DML returns a stable negative theta. This disagreement indicates that the estimated relationship depends on how province heterogeneity, year shocks, and nonlinear controls are handled.
+Sixth, DML is a robustness exercise, not a stand-alone identification strategy. The main DML specification uses observed controls and year dummies, but no province dummies. When province dummies are added, the result weakens. This suggests that the stable negative main DML result should be read as flexible-control robustness using mainly between-province variation.
 
-Seventh, Causal Random Forest is not implemented in the current repo. The CRF section should therefore remain blank and should not be presented as a result.
+Seventh, CRF is exploratory. Although CRF estimates are broadly negative for `log_real_min_wage`, confidence intervals usually contain zero and magnitudes are seed-sensitive. The sample size of 441 observations is small for precise CATE estimation, so individual CATEs should not be interpreted as reliable province-level treatment effects.
 
-Finally, external validity is limited. The panel covers Vietnam from 2018 to 2024, a period that includes COVID and post-COVID labor-market disruptions. Results from this period may not generalize to earlier periods, worker-level settings, or other countries.
+Eighth, `min_wage_growth` is not a strong treatment in the current panel. It is unstable across DML learners/folds/K choices and is strongly affected by year structure. It should remain exploratory.
 
-## Missing Information To Resolve
+Ninth, the official citation and definition for `informal_rate` still need final verification. The repo identifies the raw workbook and sheet, but the final paper should cite the official data source and definition.
 
-The following items would strengthen the final paper:
+## Data Wishlist
 
-- A clearer data-source citation for the `informal_rate` measure.
-- A more detailed explanation of how provincial wage-region mapping handles district-level variation.
-- Verification of all literature citation details and publication status.
-- If possible, grouped cross-fitting by province for DML robustness.
-- If possible, an expanded dataset or microdata source to support stronger identification.
+The strongest future improvements would require richer data:
 
-## Source Files Used
+- VHLSS microdata to observe household/worker outcomes and informal employment definitions more directly.
+- LFS microdata to study worker-level employment status, informality, hours, wages, and sector transitions.
+- District-year wage-region mapping from official decrees.
+- District population, labor force, or employment weights to construct weighted province-year treatment exposure.
+- Longer pre-2018 wage and labor-market data to improve `min_wage_growth` and pre-trend checks.
 
-- `reports/did_eventstudy_feasibility.md`
-- `reports/dml_theta_convergence_interpretation.md`
-- `reports/model_family_comparison.md`
-- `reports/literature_comparison_current_results.md`
-- `reports/specification_y_d_w.md`
+## Bottom Line
+
+The current evidence is valuable as a transparent province-year empirical analysis. However, the results should be interpreted as specification-sensitive associations and robustness diagnostics, not as definitive causal estimates.
+

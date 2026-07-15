@@ -1,67 +1,62 @@
-# Why a Purely Linear OLS Specification May Be Limited
+# Why Linear OLS May Be Limited
 
 ## Purpose
 
-This note explains why a purely linear OLS specification may be too restrictive for the current province-year panel. The goal is not to reject OLS, FE, or TWFE models. These models remain necessary transparent baselines. The point is narrower: the existing diagnostic evidence suggests that the relationship between regional minimum wages, local labor-market controls, and informal employment may not be well summarized by a single constant linear slope.
+This section explains why linear OLS/FE/TWFE models may be limited in this project. It does not argue that OLS is wrong. OLS, FE, and TWFE remain necessary baseline models.
 
-All evidence in this note should be interpreted as diagnostic evidence only. It does not establish a causal effect of minimum wage policy on informal employment.
+The main concern is that a linear model may misspecify the nuisance relationship between controls W and outcome Y.
 
-## Current Evidence
+## Core Logic
 
-The nonlinearity diagnostic suggests visible curvature in the LOWESS relationships between `informal_rate` and several key variables:
+The current diagnostics suggest that nonlinearity is concentrated more in the relationship between W and Y than in a simple nonlinear D-Y treatment effect.
 
-| Variable | Diagnostic implication |
-|---|---|
-| `log_real_min_wage` | The relationship with informal employment does not look fully linear across the observed support. |
-| `unemployment_rate` | The association appears to vary across different unemployment levels. |
-| `labour_productivity` | The relationship may differ between lower-productivity and higher-productivity provinces. |
-| `employed_persons` | The level form shows curvature and may be affected by scale differences across provinces. |
-| `log_employed_persons` | The log form is more interpretable, but still shows nonlinearity in the diagnostic plots. |
+This matters because the baseline linear model assumes:
 
-The predictive model comparison points in the same direction. In the current diagnostic outputs:
+```text
+informal_rate = linear function of D + linear function of W + FE + error
+```
 
-| Model | RMSE | R2 |
-|---|---:|---:|
-| Linear Regression | 7.367 | 0.672 |
-| Random Forest custom | 5.656 | 0.807 |
-| Gradient Boosting custom | 5.615 | 0.810 |
+If the true relationship between `informal_rate` and controls such as `labour_productivity`, `trained_labour_rate`, `unemployment_rate`, or `log_employed_persons` is nonlinear, then the linear baseline may leave systematic structure in the residuals.
 
-Relative to the linear model, the two machine-learning diagnostic models reduce RMSE by more than 20 percent. This does not mean that the machine-learning models are causal models. It only suggests that flexible functional forms capture additional predictive structure in `informal_rate` that a linear specification does not fully capture.
+DML is useful here not because it magically proves causality, but because it can estimate nuisance functions flexibly:
 
-## Why This Matters for Baseline OLS
+```text
+g(W) = E[Y | W]
+m(W) = E[D | W]
+```
 
-A standard linear OLS model imposes a constant marginal association between each regressor and the outcome. For example, it assumes that a one-unit increase in `log_real_min_wage` is associated with the same change in `informal_rate` across all provinces and years, conditional on the included controls.
+This makes DML a reasonable robustness check after OLS/FE/TWFE.
 
-That assumption may be restrictive in this setting for four reasons.
+## Evidence
 
-First, the policy variable may have different associations at different parts of the wage distribution. A wage increase in a low-wage region may not map to informal employment in the same way as a wage increase in a higher-wage region.
+The evidence comes from:
 
-Second, several control variables are themselves strongly related to province size and development level. Variables such as `labour_productivity`, `employed_persons`, and `log_employed_persons` may proxy for broader structural differences across provinces. If those relationships are nonlinear, a linear control term may leave systematic residual patterns.
+- raw LOWESS curvature;
+- residualized LOWESS curvature in DML-like specifications;
+- RESET tests rejecting linearity;
+- formal tests showing stronger nonlinear evidence in W terms than in D-only squared terms;
+- PDPs showing non-flat predictive relationships;
+- ML predictive models fitting `informal_rate` better than linear regression.
 
-Third, province and year fixed effects address some forms of omitted heterogeneity, but they do not automatically solve functional-form misspecification. Province fixed effects absorb time-invariant province differences. Year fixed effects absorb common national shocks. They do not guarantee that the slope of `log_real_min_wage` or the controls is linear over the observed support.
+Important nuance:
 
-Fourth, the relationship may involve interactions. The association between minimum wages and informal employment may differ depending on productivity, unemployment, training, or province scale. A simple linear additive model does not capture those interactions unless they are explicitly added.
+After province fixed effects are included, the residualized LOWESS curvature becomes milder. This suggests that part of the apparent nonlinearity is related to province-level structure and between-province differences.
 
-## How To Use OLS Despite These Limits
+## Correct Interpretation
 
-OLS, FE, and TWFE should still be reported because they are transparent and easy to audit. They provide a useful baseline association and allow comparison with standard empirical approaches in the literature.
+Do not write:
 
-However, the interpretation should be cautious:
+```text
+OLS is wrong.
+```
 
-- Treat pooled OLS as a descriptive association.
-- Treat FE and TWFE as stronger baseline specifications, but still not final causal proof.
-- Avoid claiming that a single linear coefficient fully summarizes the policy relationship.
-- Use flexible diagnostics and DML-style robustness checks to test whether the baseline direction is sensitive to functional-form assumptions.
+Write:
 
-## Suggested Paper Wording
+```text
+OLS/FE/TWFE are transparent baseline associations, but diagnostics suggest that linear nuisance adjustment may be restrictive. DML is used as an additional robustness check for flexible control adjustment.
+```
 
-The diagnostic evidence indicates that several relationships in the province-year panel are not well described by a purely linear functional form. LOWESS plots show visible curvature for `log_real_min_wage` and several labor-market controls, while flexible predictive models reduce RMSE relative to a linear regression. These results do not provide causal evidence, but they suggest that linear OLS estimates should be interpreted as transparent baseline associations rather than as a complete description of the underlying relationship. For this reason, the analysis should report OLS/FE/TWFE baselines and then examine whether the conclusions are robust to more flexible control functions.
+## Suggested Paper Paragraph
 
-## Source Files Used
-
-- `reports/tables/nonlinearity_summary_final.csv`
-- `reports/tables/model_comparison_linear_vs_ml_final.csv`
-- `reports/nonlinearity_evidence.md`
-- `reports/nonlinearity_diagnostic_summary.md`
-- `reports/baseline_ols_fe_summary.md`
+The baseline OLS/FE/TWFE models are retained because they provide transparent and auditable panel estimates. However, the nonlinearity diagnostics suggest that a purely linear specification may be restrictive, especially for the nuisance relationship between local controls and informal employment. RESET tests reject linearity in several specifications, and squared-control tests indicate that nonlinearities are stronger in the controls than in the treatment-only quadratic terms. For this reason, DML is used as a supplementary robustness exercise that flexibly learns the nuisance functions. This does not imply that OLS is invalid or that DML provides causal identification; it only addresses whether the estimated relationship is sensitive to linear control-function assumptions.
 

@@ -2,79 +2,109 @@
 
 ## Purpose
 
-This note provides a concise narrative for the current empirical results. It is written for use in the results section of the paper or presentation.
+This section provides a 1-2 page narrative for the main empirical results. It follows the required structure:
 
-## Core Narrative
+1. The data show nonlinear patterns.
+2. Baseline models show sign reversal: between-province estimates are negative, while within-province estimates are positive.
+3. DML is negative and relatively stable, but mainly uses between-province variation.
+4. DML with province dummies becomes weak, suggesting the disagreement with TWFE is driven by province heterogeneity and thin within variation, not simply by nonlinearity.
+5. CRF has the same broad sign as DML but is seed-sensitive.
+6. The conclusion must remain cautious.
 
-The empirical results show that the relationship between regional minimum wage exposure and province-year informal employment rates is sensitive to model specification.
+## 1. Nonlinearity Evidence
 
-In pooled OLS and year-FE specifications, `log_real_min_wage` is negatively associated with `informal_rate`. However, once province fixed effects are included, the association becomes positive. The two-way fixed effects specification, which controls for both time-invariant province differences and common year shocks, estimates a positive coefficient for `log_real_min_wage`.
+The first result is diagnostic. The relationship between informal employment, minimum wages, and local controls is not well summarized by a purely linear specification.
 
-This sign change is important. It suggests that cross-sectional differences across provinces are a major part of the raw negative association. Provinces with higher real minimum wages may differ systematically from lower-wage provinces in productivity, employment scale, labor-market structure, and development level. Once the model focuses more on within-province changes over time, the estimated association changes direction.
+The evidence comes from several sources. Raw LOWESS plots show curvature for `log_real_min_wage`, `labour_productivity`, `unemployment_rate`, and employment-scale variables. Residualized LOWESS strengthens this point: in the DML-like specification with controls and year effects, `log_real_min_wage` has a LOWESS departure ratio of about `0.275`, while `real_min_wage` has a departure ratio of about `0.312`. Formal RESET tests reject linearity in all six tested treatment/specification combinations, with p-values below or around `0.003`. However, the squared treatment-only tests are weak, while squared-control tests are stronger in pooled and year-FE models.
 
-At the same time, the nonlinearity diagnostics indicate that a purely linear specification may be restrictive. LOWESS plots show curvature for `log_real_min_wage` and several controls, and flexible predictive models fit `informal_rate` better than a linear regression. These diagnostic results do not establish causality, but they motivate the use of flexible-control robustness checks.
+This implies that the main nonlinearity is likely in the nuisance relationship between W and Y, rather than a simple nonlinear treatment effect of D on Y. Therefore, flexible methods such as DML are useful as robustness checks for nuisance adjustment, not as proof of causality.
 
-The DML results provide such a robustness check. For `log_real_min_wage`, DML estimates are consistently negative across learners, seeds, and most folds. However, this DML result differs in sign from the TWFE estimate. Because the current DML setup does not replace a credible identification strategy, this disagreement should be interpreted as evidence of model sensitivity rather than as proof that one estimate is correct.
+## 2. Baseline Sign Reversal
+
+The baseline models show a clear sign reversal.
+
+For `log_real_min_wage`:
+
+- Pooled OLS + W: `-44.84`, p = `0.0035`.
+- Year FE + W: `-48.18`, p = `0.0039`.
+- Province FE + W: `13.91`, p = `0.0034`.
+- TWFE + W: `13.33`, p = `0.0375`.
+
+The negative pooled/year-FE estimates use substantial between-province variation. The positive province-FE/TWFE estimates use within-province variation over time. The sign reversal therefore suggests that province heterogeneity is central. Provinces with higher wage regions may differ systematically in productivity, employment structure, urbanization, informality, and labor-market composition.
+
+This is why TWFE should be treated as the main linear panel benchmark, but still not as final causal proof.
+
+## 3. Main DML Result
+
+The main DML specification uses W controls and year dummies. It does not include province dummies.
+
+For `log_real_min_wage`, the main DML theta is approximately `-33.34`. The sign is stable across learners, seeds, folds, and K choices:
+
+- 100% of 9 main runs are negative.
+- 98% of 45 fold-level estimates are negative.
+- K=2, K=5, and K=10 sweeps all have 100% negative signs.
+
+This is an important robustness result, but it should be described carefully. The correct wording is **relatively stable**, not **converged**. Confidence intervals still contain zero in about 22% of main runs, mainly in Gradient Boosting specifications, and magnitude depends on learner.
+
+In magnitude terms, theta around `-33` implies that a 10% increase in real minimum wages is associated with roughly:
+
+```text
+-33 x 0.10 = -3.3 percentage points
+```
+
+lower `informal_rate` in the main DML specification. This is a specification-conditional association, not a definitive causal effect.
+
+## 4. DML With Province Dummies
+
+The key enhanced result comes from the DML variant with province dummies.
+
+When province dummies are added, the DML result weakens sharply:
+
+- Mean theta for `log_real_min_wage` becomes about `-1.87`.
+- The theta range is approximately `[-14.63, 14.09]`.
+- The p-value rises to about `0.3096`.
+- Confidence intervals contain zero in about 78% of runs.
+- Signs flip across learners.
+
+This result changes the interpretation. The disagreement between main DML and TWFE should not be described simply as "DML captures nonlinearity while TWFE does not." A better interpretation is:
+
+> The main DML result relies heavily on between-province variation. When province heterogeneity is absorbed, the DML signal becomes weak because within-province treatment variation is thin.
+
+The method-comparison output notes that roughly 95% of D variation is between provinces. Therefore, the difference between DML and TWFE is mainly about variation source and province heterogeneity, not only about nonlinearity.
+
+## 5. CRF Result
+
+CRF is now implemented and should be used as exploratory heterogeneity analysis.
+
+For `log_real_min_wage`, CRF estimates are broadly negative across seeds. For example, the ATE estimates range roughly from `-17.21` to `-1.86` across reported seeds. The CRF direction is consistent with the main DML direction.
+
+However, CRF should not be a main causal result:
+
+- Confidence intervals usually contain zero.
+- Magnitudes are seed-sensitive.
+- The sample has only 441 observations.
+- Individual CATEs are noisy.
+- CRF uses controls and year dummies, but not province dummies in the main run.
+
+Thus, CRF should be described as exploratory heterogeneity evidence that broadly aligns with DML, but is too uncertain for strong claims.
+
+## 6. Main Conclusion
+
+The main conclusion is cautious:
+
+> The evidence is specification-sensitive and variation-source-sensitive. Between-province specifications tend to produce negative estimates, while within-province linear specifications produce positive estimates. Main DML and CRF point negative, but DML with province dummies weakens substantially. Therefore, the current evidence should be interpreted as robust diagnostics and baseline associations, not as definitive causal evidence.
 
 ## Suggested Results Paragraph
 
-The baseline models reveal substantial specification sensitivity. In pooled OLS and year-FE models, the log real minimum wage is negatively associated with the informal employment rate. After province fixed effects are included, the coefficient becomes positive, and the two-way fixed effects model also estimates a positive association. This pattern suggests that cross-province differences account for an important part of the pooled negative relationship. Nonlinearity diagnostics further indicate that the relationship between informal employment, minimum wages, and local labor-market controls is not fully captured by a simple linear specification. DML robustness checks produce a stable negative theta for the log real minimum wage, but this estimate differs in sign from the TWFE benchmark. Taken together, the results should be interpreted as specification-sensitive baseline evidence rather than definitive causal evidence.
-
-## Treatment-Specific Interpretation
-
-### `log_real_min_wage`
-
-This is the main treatment for reporting. It is interpretable, reduces scale issues, and is the most stable DML treatment.
-
-Current pattern:
-
-- Pooled/year-FE association: negative.
-- Province-FE/TWFE association: positive.
-- DML theta: negative and relatively stable.
-
-Interpretation:
-
-The evidence is informative but not settled. The sign disagreement between TWFE and DML should be highlighted as a central result.
-
-### `real_min_wage`
-
-This is a useful robustness treatment. It shows a pattern similar to `log_real_min_wage`, but the level coefficient is harder to communicate because it depends on VND/month units.
-
-Interpretation:
-
-Use it to show that the log-treatment conclusion is not purely an artifact of the log transform.
-
-### `min_wage_growth`
-
-This should not be a main treatment. The TWFE estimate is statistically weak, and DML theta stability is poor.
-
-Interpretation:
-
-Use only as exploratory evidence or appendix robustness.
-
-## What Not To Claim
-
-The current results should not be written as:
-
-- "Minimum wages cause informal employment to increase."
-- "DML proves that minimum wages reduce informal employment."
-- "Machine learning is better than TWFE, so DML should be the main result."
-- "The result confirms or contradicts prior literature by coefficient magnitude."
-
-## What To Claim
-
-The safer claim is:
-
-- The current province-year panel shows specification-sensitive associations between regional minimum wage exposure and informal employment rates.
-- Province fixed effects materially change the estimated relationship.
-- Nonlinearity diagnostics motivate flexible-control robustness checks.
-- DML results are stable for `log_real_min_wage`, but differ from TWFE, so the evidence remains cautious.
+The results reveal substantial sensitivity to both specification and variation source. Pooled OLS and year-FE models estimate a negative association between log real minimum wages and informal employment, while province-FE and TWFE models estimate a positive association. Nonlinearity diagnostics indicate that linear nuisance adjustment may be restrictive, especially for the relationship between controls and informal employment. Main DML estimates are negative and relatively stable across learners, seeds, folds, and K choices, but they rely mainly on between-province variation. When province dummies are added to the DML specification, the estimate becomes weak and sign-unstable, suggesting that the disagreement with TWFE is driven by province heterogeneity and limited within-province treatment variation rather than by nonlinearity alone. CRF estimates have the same broad negative direction as DML but are exploratory and seed-sensitive. Overall, the evidence does not support a definitive causal conclusion.
 
 ## Source Files Used
 
-- `reports/model_family_comparison.md`
-- `reports/baseline_ols_fe_summary.md`
-- `reports/dml_treatment_choice.md`
-- `reports/dml_theta_convergence_interpretation.md`
-- `reports/why_linear_ols_may_be_limited.md`
+- `reports/tables/method_comparison_summary.csv`
+- `reports/tables/residualized_lowess_summary.csv`
+- `reports/tables/nonlinearity_formal_tests.csv`
+- `reports/tables/dml_convergence_interpretation.csv`
+- `reports/tables/dml_theta_province_fe.csv`
+- `reports/tables/crf_stability_by_seed.csv`
+- `reports/tables/crf_ate_results.csv`
 

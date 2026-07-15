@@ -1,73 +1,66 @@
-# OLS, FE, TWFE, and DML Comparison
+# OLS, FE, TWFE, DML, and CRF Comparison After Main Merge
 
 ## Purpose
 
-This note compares the current model families by research role. It should not be read as a horse race where the model with the preferred sign or lower prediction error is automatically the correct causal model.
+This note updates the model-family comparison after the main branch added enhanced DML checks and Causal Forest DML outputs.
 
-The comparison uses `log_real_min_wage` as the main treatment because it is the preferred DML treatment and the most interpretable treatment for reporting.
+The comparison should be read by model role, not as a competition where one model automatically wins.
 
-## Current Comparison
+## Main Comparison For `log_real_min_wage`
 
-| Model family | Current result for `log_real_min_wage` | Main role | Interpretation |
-|---|---:|---|---|
-| Pooled OLS with controls | `-44.84`, p = `0.0035` | Descriptive baseline | Negative association, but mixes cross-province and within-province variation. |
-| Province FE with controls | `13.91`, p = `0.0034` | Within-province baseline | Positive within-province association after absorbing time-invariant province differences. |
-| Year FE with controls | `-48.18`, p = `0.0039` | Common-shock-adjusted baseline | Negative association after absorbing common year shocks, but without province FE. |
-| TWFE with controls | `13.33`, p = `0.0375` | Main linear panel benchmark | Positive within-province association net of common year shocks. Still not definitive causal proof. |
-| DML partialling-out | mean theta `-33.34`, average p = `0.0293` | Flexible-control robustness | Stable negative DML theta, but opposite sign from TWFE. Indicates model sensitivity. |
-| Causal Random Forest | Not implemented in current repo | Left blank | No CRF result is reported because CRF has not been implemented. |
+| Method | Estimate | Direction | Role | Interpretation |
+|---|---:|---|---|---|
+| Pooled OLS + W | `-44.84` | negative | Descriptive baseline | Uses between and within variation, no FE. |
+| Year FE + W | `-48.18` | negative | Common-shock-adjusted baseline | Still mainly between-province variation after year shocks. |
+| Province FE + W | `13.91` | positive | Within-province baseline | Sign flips after absorbing province heterogeneity. |
+| TWFE + W | `13.33` | positive | Main linear panel benchmark | Within-province, net of common year shocks. |
+| DML, W + year dummies | `-33.34` | negative | Flexible-control robustness | Stable across seeds/folds/K, but closer to year-FE variation. |
+| DML + province dummies | `-1.87` | mixed/weak | TWFE-comparable robustness | Weak and sign-unstable; little within-province D variation remains. |
+| Causal Forest DML | about `-7.86` to `-17.21` depending on seed | negative but uncertain | Exploratory heterogeneity | Sign broadly negative, but seed-sensitive and CIs contain zero. |
 
-## Main Takeaway
+## Updated Interpretation
 
-The baseline linear panel models and DML do not tell one fully consistent story.
+The updated evidence makes the core message sharper:
 
-The TWFE estimate for `log_real_min_wage` is positive and statistically significant at conventional levels. The DML theta is negative and relatively stable across learners, seeds, and folds. This disagreement is the main methodological result from the comparison.
+> Results are both specification-sensitive and variation-source-sensitive.
 
-The safest interpretation is:
+The negative estimates come mainly from pooled/year-FE/DML specifications that rely substantially on between-province variation. The positive estimates come from province-FE/TWFE specifications that focus on within-province changes. When DML is modified to include province dummies, the negative signal becomes weak and unstable.
 
-- Pooled OLS and year-FE estimates are negative, but they are strongly affected by cross-sectional structure.
-- Province-FE and TWFE estimates are positive, suggesting that within-province changes tell a different story from pooled cross-sectional comparisons.
-- DML estimates are negative after flexible nuisance adjustment, but the current DML setup is not a stronger identification design than TWFE.
-- Therefore, the evidence is specification-sensitive and should be reported cautiously.
+## Role Of CRF
 
-## How To Position Each Model
+CRF is now implemented in the repo. It should no longer be treated as blank.
 
-### OLS
+However, CRF should be framed narrowly:
 
-Pooled OLS is useful for a first descriptive association. It should not be used as the main causal estimate because provinces differ structurally in productivity, employment scale, industrial composition, and informality.
+- It is exploratory heterogeneity analysis.
+- It uses `CausalForestDML` with grouped cross-fitting by province.
+- It reports average marginal effects and CATE distributions.
+- It does not provide standalone causal proof.
+- With only 441 observations, CATE estimates are noisy.
 
-### Province FE
+For `log_real_min_wage`, CRF estimates are negative across reported seeds, but confidence intervals contain zero in the main stability runs and magnitudes are seed-sensitive. This supports a cautious heterogeneity narrative, not a main result.
 
-Province fixed effects are important because they remove time-invariant differences across provinces. In the current output, adding province FE changes the sign of the `log_real_min_wage` coefficient from negative to positive. This sign change is substantively important and should be discussed.
+## Recommendation For Results Section
 
-### TWFE
+The results section should use this hierarchy:
 
-TWFE is the main linear panel benchmark because it includes both province and year fixed effects. However, TWFE still imposes a linear additive specification and does not solve all identification concerns. It should be reported as the strongest current baseline association, not as final causal proof.
+1. TWFE is the main linear panel benchmark.
+2. DML without province dummies is flexible-control robustness, but not TWFE-equivalent.
+3. DML with province dummies is a critical sensitivity check showing weak within-province DML evidence.
+4. CRF is exploratory heterogeneity only.
 
-### DML
+## Suggested Paper Wording
 
-DML is useful because the diagnostics show nonlinear relationships between `informal_rate`, treatment variables, and controls. In the current repo, DML is best interpreted as a flexible-control robustness exercise. It should not replace the TWFE baseline because the sample is small, province fixed effects are not fully included in the nuisance functions, and cross-fitting is row-level rather than grouped by province.
-
-### CRF
-
-This section is intentionally left blank because Causal Random Forest has not been implemented in the current repo. No CRF estimates should be reported or interpreted.
-
-## Recommendation for the Next Narrative
-
-The empirical narrative should be:
-
-1. Report OLS/FE/TWFE as transparent baseline associations.
-2. Emphasize the sign flip between pooled/year-FE and province/TWFE specifications.
-3. Use DML as a robustness diagnostic showing that flexible nuisance adjustment produces a stable but opposite-signed estimate.
-4. State that the current evidence is specification-sensitive.
-5. Leave CRF blank unless it is implemented and validated in a later step.
+The model comparison shows that estimates depend strongly on both specification and variation source. Pooled OLS, year-FE, and main DML specifications produce negative estimates for the log real minimum wage, while province-FE and TWFE specifications produce positive estimates. A DML variant with province dummies weakens the negative DML signal, suggesting that the main DML estimate relies heavily on between-province variation. CRF estimates are broadly negative but exploratory, seed-sensitive, and statistically uncertain. Overall, the evidence should be interpreted as specification-sensitive rather than as a single definitive causal estimate.
 
 ## Source Files Used
 
+- `reports/tables/method_comparison_summary.csv`
 - `reports/tables/baseline_ols_fe_results.csv`
-- `reports/baseline_ols_fe_summary.md`
-- `reports/tables/dml_theta_stability.csv`
-- `reports/tables/dml_main_results.csv`
-- `reports/dml_results_summary.md`
-- `reports/dml_theta_convergence_interpretation.md`
-- `reports/why_linear_ols_may_be_limited.md`
+- `reports/tables/dml_convergence_interpretation.csv`
+- `reports/tables/dml_theta_province_fe.csv`
+- `reports/tables/crf_ate_results.csv`
+- `reports/tables/crf_stability_by_seed.csv`
+- `reports/tables/crf_cate_summary.csv`
+- `reports/crf_implementation_note.md`
+

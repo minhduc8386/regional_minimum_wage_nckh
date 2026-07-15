@@ -2,24 +2,41 @@
 
 ## Purpose
 
-This note documents the main unresolved issues in the current research repo and proposes concrete remediation steps. The goal is to make the project more transparent, auditable, and suitable for a scientific research paper.
+This note documents the current unresolved issues in the research repo after merging the latest updates from `main`. The latest merge added enhanced nonlinearity diagnostics, DML K-fold sweeps, a DML variant with province dummies, Causal Forest DML outputs, and a method-comparison table.
 
-The issues below do not mean the current pipeline is unusable. They mean that some claims must be written cautiously, and some data/method details should be strengthened before final submission.
+The project is now stronger than before, but the interpretation must also become more careful. The central message is no longer simply that there is nonlinearity. The central message is that the results are **specification-sensitive and variation-source-sensitive**.
 
 ## Executive Summary
 
-The current repo already has a working province-year panel for Vietnam from 2018 to 2024, baseline OLS/FE/TWFE results, nonlinearity diagnostics, and DML robustness checks. The main remaining concerns are:
+The current repo has:
 
-1. The exact citation/source metadata for `informal_rate` is not fully documented.
-2. The province-level wage-region mapping is an approximation because official minimum wage regions can vary at district level.
-3. The current DML implementation is useful as robustness, but it is not a full causal design and does not fully reproduce province fixed effects in the nuisance functions.
-4. OLS/FE/TWFE and DML results differ in sign, so the empirical narrative must emphasize specification sensitivity.
-5. CRF is not implemented and should remain blank.
-6. Some literature metadata still needs final verification before submission.
+- a validated balanced province-year panel for 2018-2024;
+- baseline OLS/FE/TWFE results;
+- raw and residualized LOWESS diagnostics;
+- PDP and feature-importance diagnostics;
+- formal nonlinearity tests;
+- DML stability checks across learners, seeds, folds, and K choices;
+- a DML variant with province dummies;
+- Causal Forest DML outputs;
+- a method-comparison summary.
 
-The strongest immediate fix is to create a transparent data-source and treatment-mapping note, then run robustness checks around the wage-region mapping if time allows.
+The main remaining issues are:
 
-## Issue 1: `informal_rate` Source and Citation Are Not Fully Documented
+1. The official citation/source metadata for `informal_rate` is not fully documented.
+2. Province-level wage-region mapping remains an approximation because official wage regions can vary at district level.
+3. Most treatment variation appears to be between provinces; within-province DML evidence becomes weak when province dummies are added.
+4. OLS/FE/TWFE, DML, and CRF do not give one unified sign.
+5. CRF is now implemented, but it is exploratory and statistically uncertain.
+6. `min_wage_growth` remains weak as a main treatment.
+7. Literature metadata still needs final verification.
+8. Some older notes have encoding issues.
+
+The two most important fixes before final submission are:
+
+1. verify and document the official source for `informal_rate`;
+2. strengthen or clearly disclose the province-level wage-region approximation.
+
+## Issue 1: `informal_rate` Source And Citation Are Not Fully Documented
 
 ### Current Status
 
@@ -29,7 +46,7 @@ The final panel uses:
 informal_rate
 ```
 
-The variable is created from the raw Excel file:
+The variable is created from:
 
 ```text
 data/raw/17_informal_employment_rate_by_province_2018_2024.xlsx
@@ -41,46 +58,40 @@ The cleaning script is:
 scripts/01_clean_nso_province_panel.py
 ```
 
-Inside the workbook, the relevant sheet is:
+Inside the workbook:
 
 ```text
-E02.51
+Sheet: E02.51
+Title: Informal employment rate by province by Cities, provincies and Year
+Years: 2018-2024
+2024 column: Prel. 2024
 ```
 
-The title row in the sheet is:
-
-```text
-Informal employment rate by province by Cities, provincies and Year
-```
-
-The sheet contains yearly values for 2018-2024, including `Prel. 2024`. However, during inspection, no explicit source row was found inside the workbook.
+The workbook inspection did not find a source row inside the sheet. Therefore, the repo currently knows the raw file and table title, but not the final official citation.
 
 ### Why This Matters
 
-For a research paper, saying that the data came from a local Excel file is not enough. A reader needs to know the official source of the data.
+For a scientific paper, the data section must identify the official data source. A reader should be able to verify:
 
-The paper should be able to answer:
+- the institution or publisher;
+- the official table name;
+- the definition of informal employment;
+- the denominator used for the informal employment rate;
+- whether 2024 is preliminary;
+- the access date;
+- the URL or publication source.
 
-- Which institution published the data?
-- What is the exact table name?
-- Is the 2024 value preliminary?
-- Was the table downloaded from an official portal, statistical yearbook, or manually compiled?
-- What is the access date?
-- Is there a URL or publication reference?
-
-Without this information, the variable is technically usable in the code pipeline, but the paper's data section remains incomplete.
+Without this information, the variable is computationally valid but not fully documented for publication.
 
 ### Risk Level
 
-Medium to high for final paper quality.
+High for final paper quality.
 
-This is not a computational blocker because the variable exists and validates correctly. It is a documentation and credibility issue.
+Not a code blocker, but a documentation blocker for final submission.
 
-### How To Fix
+### Minimum Fix
 
-#### Minimum Fix
-
-Create a data-source note that records the current known information:
+Add a data-source note:
 
 ```text
 Variable: informal_rate
@@ -89,66 +100,35 @@ Sheet: E02.51
 Table title: Informal employment rate by province by Cities, provincies and Year
 Years: 2018-2024
 2024 status: preliminary
-Current citation status: source institution/link still needs verification
+Official citation: to verify
 ```
 
-Then write in the paper:
+### Recommended Fix
 
-> Informal employment rates are taken from the province-level statistical table "Informal employment rate by province by Cities, provincies and Year" for 2018-2024. The 2024 value is preliminary. The final citation to the official statistical source will be verified before submission.
-
-This is acceptable for an internal draft, but not ideal for final submission.
-
-#### Recommended Fix
-
-Find the official source of the Excel table and record:
-
-- Official institution name, likely GSO/NSO if verified.
-- Official table title.
-- URL or publication name.
-- Download/access date.
-- Whether 2024 is preliminary.
-- Any definitions/notes attached to informal employment.
-
-Then create or update:
+Create:
 
 ```text
 reports/data_sources.md
 ```
 
-with a structured citation entry.
+and document:
 
-Suggested entry format:
+- official publisher;
+- official URL or publication;
+- access date;
+- table title;
+- definition notes;
+- processing script.
 
-```text
-### Informal employment rate
+### Strong Fix
 
-- Variable in repo: `informal_rate`
-- Raw file: `data/raw/17_informal_employment_rate_by_province_2018_2024.xlsx`
-- Sheet/table: `E02.51`
-- Table title: `Informal employment rate by province by Cities, provincies and Year`
-- Publisher: [to verify]
-- URL/publication: [to verify]
-- Years used: 2018-2024
-- Note: 2024 is preliminary in the source table.
-- Processing script: `scripts/01_clean_nso_province_panel.py`
-```
+Find the official metadata or methodological note defining informal employment. The paper should clarify whether informal employment includes informal wage workers, self-employment, household business workers, agriculture, or other categories.
 
-#### Strong Fix
-
-If the official source has methodological notes, add a short definition note:
-
-- What counts as informal employment?
-- Is the denominator total employed persons?
-- Does the measure include agriculture, household business, self-employment, or informal wage work?
-- Are definitions stable across years?
-
-This would make the outcome variable much more defensible in the paper.
-
-## Issue 2: Province-Level Wage Region Mapping Is an Approximation
+## Issue 2: Province-Level Wage-Region Mapping Is An Approximation
 
 ### Current Status
 
-The current treatment mapping is created from:
+The mapping source is:
 
 ```text
 data/raw/policy/province_wage_region_map_raw_2018_2024.csv
@@ -166,55 +146,29 @@ The processed output is:
 data/processed/policy/province_wage_region_map.csv
 ```
 
-The mapping note is:
+The current mapping assigns one wage region to each province-year because the outcome is measured at province-year level. The mapping note states that this is a province-level approximation.
 
-```text
-reports/province_wage_region_mapping_notes.md
-```
+The key issue is that Vietnam's official minimum wage regions can vary at district or urban district level. A single province can contain districts in multiple wage regions.
 
-The current script explicitly states that the mapping is a province-level approximation. It assigns one wage region to each province-year because the research panel is at province-year level.
+Current raw mapping inspection showed:
 
-However, Vietnam's minimum wage regions are officially defined at more detailed administrative levels in many cases. A province can contain districts, urban districts, towns, or provincial cities assigned to different wage regions.
-
-The raw mapping currently includes:
-
-```text
-province-level approximation based on provincial capital; mixed district regions
-```
-
-for many rows.
-
-Current inspection shows:
-
-- 441 province-year rows in the mapping.
-- 385 rows flagged as mixed district regions.
+- 441 province-year rows;
+- 385 rows flagged as mixed district regions;
 - 56 rows marked as mostly one wage region.
 
 ### Why This Matters
 
-The outcome is measured at province-year level:
+The outcome is province-year, but treatment may vary within province. Assigning one wage region to an entire province can create treatment measurement error.
 
-```text
-province x year
-```
+This can affect:
 
-But the official treatment assignment can vary within province:
+- `real_min_wage`;
+- `log_real_min_wage`;
+- `min_wage_growth`;
+- baseline OLS/FE/TWFE estimates;
+- DML and CRF estimates.
 
-```text
-district or urban district x year
-```
-
-This creates treatment measurement error. For example, if a province contains both Region I and Region II districts, assigning the whole province to one region based on the provincial capital may overstate or understate actual exposure for workers in other districts.
-
-This matters especially because the treatment variables are central:
-
-```text
-real_min_wage
-log_real_min_wage
-min_wage_growth
-```
-
-If treatment is measured with error, estimated coefficients can be biased or unstable. It also weakens causal interpretation.
+This issue is especially important because many current estimates are sensitive to model specification.
 
 ### Risk Level
 
@@ -222,11 +176,7 @@ High for causal interpretation.
 
 Medium for descriptive/diagnostic analysis.
 
-The current mapping is still usable as an approximation, but the paper must state it clearly.
-
-### How To Fix
-
-#### Minimum Fix
+### Minimum Fix
 
 Keep the current mapping, but explicitly label it:
 
@@ -234,447 +184,296 @@ Keep the current mapping, but explicitly label it:
 province-level wage-region approximation
 ```
 
-In the data section, write:
+Suggested paper wording:
 
 > Because the outcome is observed at province-year level, the minimum wage region is assigned at province-year level. For provinces containing districts in multiple wage regions, the assignment uses a province-level approximation based on the provincial capital. This may introduce treatment measurement error and is treated as a limitation.
 
-This is enough for a transparent internal draft.
+### Recommended Fix
 
-#### Recommended Fix
-
-Add a binary flag:
+Add a flag:
 
 ```text
 mixed_district_region
 ```
 
-where:
+Then run robustness checks:
 
-```text
-1 = province-year contains mixed district wage regions
-0 = province-year is mostly one wage region
-```
+1. all province-years;
+2. only province-years without mixed district-region flags;
+3. possibly province-level groups based on severity of mapping ambiguity.
 
-Then use this flag in robustness checks:
-
-1. Main sample: all province-years.
-2. Restricted sample: province-years not flagged as mixed district regions.
-3. Sensitivity table: compare TWFE and DML direction across both samples.
-
-Potential output files:
+Suggested outputs:
 
 ```text
 reports/tables/wage_region_mapping_sensitivity.csv
 reports/wage_region_mapping_sensitivity.md
 ```
 
-Suggested interpretation:
+### Strong Fix
 
-- If results are similar, mapping approximation is less concerning.
-- If results change sharply, treatment measurement is an important limitation.
+Build district-year treatment exposure:
 
-#### Strong Fix
+1. collect district-year wage-region classifications from each decree;
+2. create a district-to-province crosswalk;
+3. merge district population, labor force, or employment weights;
+4. construct weighted province-year minimum wage exposure.
 
-Build district-year treatment exposure.
+This would greatly improve treatment measurement, but it requires substantial additional data work.
 
-Required inputs:
-
-- District-year wage region assignments from each minimum wage decree.
-- District population, labor force, employment, or working-age population weights.
-- District-to-province crosswalk for 2018-2024.
-
-Then construct a province-year weighted treatment:
-
-```text
-province_real_min_wage = weighted average of district-level real minimum wage
-```
-
-Possible weights:
-
-- district employed persons
-- district labor force
-- district working-age population
-- district population
-
-If no weights are available, use unweighted district average as a second-best option.
-
-This would make the treatment much stronger, but it requires substantial additional data work.
-
-## Issue 3: `min_wage_growth` Is Weak as a Main Treatment
+## Issue 3: Most Treatment Variation Is Between Provinces
 
 ### Current Status
 
-The project currently includes:
+The enhanced DML outputs show a critical pattern.
 
-```text
-min_wage_growth
-```
+Main DML with controls and year dummies:
 
-This variable is computed from `real_min_wage` by wage region over time in:
+- `log_real_min_wage` theta is stable and negative;
+- signs are stable across learners, seeds, folds, and K choices;
+- average p-value is approximately `0.0293`.
 
-```text
-scripts/07_merge_final_analysis_panel.py
-```
+DML with province dummies:
 
-The 2018 value is filled as 0 because it is the first year in the panel.
+- `log_real_min_wage` theta becomes approximately `-1.87`;
+- p-value rises to approximately `0.3096`;
+- signs become mixed across learners;
+- confidence intervals often contain zero.
 
-DML and baseline results show that this treatment is weak:
-
-- TWFE estimate is statistically insignificant.
-- DML average p-value is high.
-- DML confidence intervals contain zero in all main runs.
-- Fold-level DML signs are unstable.
+The method-comparison table notes that little within-province variation remains after province dummies; roughly 95 percent of D variation is between provinces.
 
 ### Why This Matters
 
-Growth treatment may be conceptually appealing because it measures policy change, not policy level. However, in this panel it appears noisy and unstable.
+This changes the interpretation of DML.
 
-Also, filling the first year with 0 is a practical choice, but it can create an artificial value for 2018. This does not necessarily break the model, but it should be documented.
+The main DML result is stable, but it is not TWFE-equivalent. It uses a variation source closer to year-FE/between-province comparisons. When the model is pushed toward a within-province comparison, the DML signal weakens.
 
 ### Risk Level
 
-Medium.
+High for interpretation.
 
-This is not a pipeline error, but it is risky to present `min_wage_growth` as a main treatment.
+### Minimum Fix
 
-### How To Fix
-
-#### Minimum Fix
-
-Do not use `min_wage_growth` as a main treatment.
-
-Label it as:
+Always distinguish:
 
 ```text
-exploratory treatment
+DML with W + year dummies
 ```
 
-or:
+from:
 
 ```text
-appendix robustness only
+DML with W + year dummies + province dummies
 ```
 
-#### Recommended Fix
+Do not compare main DML directly with TWFE as if they use the same variation.
 
-When reporting `min_wage_growth`, explicitly say:
+### Recommended Fix
 
-> The growth treatment is exploratory because its estimates are statistically weak and unstable across DML folds. The first year is filled with zero because no lagged real minimum wage is observed within the 2018-2024 panel.
+In the results narrative, write:
 
-#### Strong Fix
+> The stable negative DML estimate relies mainly on between-province variation. When province dummies are added, the estimate becomes weak and sign-unstable, suggesting limited within-province identifying variation for flexible DML.
 
-Extend the wage panel backward before 2018 if possible, so that the 2018 growth rate can be computed from a real 2017 value rather than filled as 0.
+### Strong Fix
 
-## Issue 4: DML Is Robustness, Not Stand-Alone Causal Identification
+If the research goal is causal inference, find stronger within-province or quasi-experimental variation:
+
+- longer panel;
+- district-level exposure;
+- policy shock;
+- microdata with richer controls;
+- valid instrument or design-based approach.
+
+## Issue 4: OLS/FE/TWFE, DML, And CRF Do Not Give One Unified Sign
 
 ### Current Status
 
-The DML script is:
+For `log_real_min_wage`:
 
-```text
-scripts/13_run_dml_theta_stability.py
-```
-
-The key outputs are:
-
-```text
-reports/tables/dml_main_results.csv
-reports/tables/dml_theta_stability.csv
-reports/tables/dml_theta_by_fold.csv
-reports/tables/dml_theta_by_seed.csv
-reports/tables/dml_theta_by_learner.csv
-reports/dml_results_summary.md
-reports/dml_theta_convergence_interpretation.md
-```
-
-The preferred DML treatment is:
-
-```text
-log_real_min_wage
-```
-
-The DML theta for `log_real_min_wage` is stable and negative across most checks. However, the current DML setup:
-
-- uses a small sample of 441 observations;
-- includes year dummies but not full province fixed effects in the nuisance functions;
-- uses row-level cross-fitting rather than province-grouped cross-fitting;
-- does not create exogenous treatment variation.
+- Pooled OLS + W: negative.
+- Year FE + W: negative.
+- Province FE + W: positive.
+- TWFE + W: positive.
+- Main DML: negative.
+- DML + province dummies: weak/mixed.
+- CRF: broadly negative, but uncertain.
 
 ### Why This Matters
 
-DML can help control flexibly for observed confounders, but it does not solve identification by itself.
-
-In this project, DML should answer:
-
-> Does the estimated treatment parameter remain stable after flexible nuisance adjustment?
-
-It should not be used to claim:
-
-> DML proves the causal effect of minimum wages on informal employment.
-
-### Risk Level
-
-High if overinterpreted.
-
-Low if clearly framed as robustness.
-
-### How To Fix
-
-#### Minimum Fix
-
-Keep the current DML outputs, but always label them as:
-
-```text
-flexible-control robustness
-```
-
-Never call DML the main causal estimator.
-
-#### Recommended Fix
-
-Add province-grouped cross-fitting:
-
-- Keep all observations from the same province in the same fold.
-- This avoids training on some years of a province and testing on other years of the same province.
-- It better respects panel dependence.
-
-Suggested output:
-
-```text
-reports/tables/dml_theta_grouped_folds.csv
-reports/dml_grouped_fold_robustness.md
-```
-
-#### Strong Fix
-
-Develop a clear identification strategy before using DML for causal claims. Possible directions:
-
-- district-level data with stronger wage-region exposure;
-- event-style policy timing if a credible shock exists;
-- microdata with worker-level controls and policy exposure;
-- replication/backtest of a stronger DiD design from the literature.
-
-## Issue 5: TWFE and DML Differ in Sign
-
-### Current Status
-
-For the main treatment:
-
-```text
-log_real_min_wage
-```
-
-the current evidence is:
-
-- pooled OLS with controls: negative;
-- year FE with controls: negative;
-- province FE with controls: positive;
-- TWFE with controls: positive;
-- DML: negative.
-
-This means the main linear panel benchmark and DML robustness check do not agree.
-
-### Why This Matters
-
-This is not just a small technical detail. It is one of the central empirical facts of the project.
-
-The sign difference suggests that results are sensitive to:
+This is the central empirical result. The project should not hide the disagreement. The disagreement shows that estimates depend on:
 
 - cross-province differences;
 - within-province changes;
 - common year shocks;
 - nonlinear controls;
-- functional form;
-- treatment measurement.
+- treatment measurement;
+- flexible nuisance adjustment.
 
 ### Risk Level
 
-High if hidden.
+High if overclaimed.
 
-Low if presented transparently.
+Low if framed transparently.
 
-### How To Fix
+### Minimum Fix
 
-#### Minimum Fix
-
-State directly:
-
-> The estimates are specification-sensitive. TWFE and DML differ in sign, so the evidence should not be interpreted as a definitive causal effect.
-
-#### Recommended Fix
-
-Make the sign difference a core results paragraph, not a footnote.
-
-Suggested wording:
-
-> The main empirical result is not a single stable causal coefficient, but rather the sensitivity of the estimated relationship to modeling choices. Province fixed effects reverse the pooled association, and DML produces an opposite-signed estimate relative to TWFE. This pattern indicates that province heterogeneity and functional form are central to interpretation.
-
-#### Strong Fix
-
-Run additional sensitivity checks:
-
-- alternative control sets;
-- lagged treatment if theoretically justified;
-- excluding COVID years;
-- excluding mixed district-region provinces;
-- grouped-fold DML;
-- province-specific trends if degrees of freedom allow.
-
-## Issue 6: CRF Is Not Implemented
-
-### Current Status
-
-Causal Random Forest is not currently implemented in the repo.
-
-No CRF script, validation table, or estimate exists.
-
-### Why This Matters
-
-If CRF is mentioned as if it were part of the empirical results, the paper would overstate the current analysis.
-
-### Risk Level
-
-Low, if left blank.
-
-Medium, if discussed as a result.
-
-### How To Fix
-
-Keep CRF sections blank unless CRF is actually implemented and validated.
-
-Recommended wording:
-
-> Causal Random Forest is not implemented in the current analysis; no CRF estimates are reported.
-
-Do not include CRF in the results narrative unless a later task explicitly builds and validates it.
-
-## Issue 7: Literature Metadata Needs Final Verification
-
-### Current Status
-
-The repo includes a literature matrix and several literature notes. These identify:
-
-- Perez Perez (2020) as the main academic/method benchmark.
-- Nguyen Cuong Viet as a Vietnam data/method benchmark.
-- Del Carpio et al. as a Vietnam context benchmark.
-- Chernozhukov et al. (2018) as the DML method reference.
-
-However, some publication status and ranking details still need final verification.
-
-### Why This Matters
-
-If the advisor requires journal quartile ranking or formal publication status, the paper should not overstate working papers as Q-ranked publications.
-
-### Risk Level
-
-Medium.
-
-### How To Fix
-
-Before final submission, verify:
-
-- exact publication version of Nguyen Cuong Viet 2025;
-- whether Del Carpio et al. has a peer-reviewed version or only the MPRA/RePEc working paper version;
-- World Development ranking/category according to the advisor's required database;
-- final citation style.
-
-Then update:
+Use the phrase:
 
 ```text
-reports/literature_review/literature_matrix_minimum_wage.csv
-reports/literature_review/literature_matrix_summary.md
-paper/initial_draft.md
+specification-sensitive and variation-source-sensitive evidence
 ```
 
-## Issue 8: Some Existing Literature Notes Have Encoding Problems
+throughout the results section.
+
+### Recommended Fix
+
+Make the disagreement the main results narrative:
+
+> The evidence does not support one clean causal conclusion. Instead, it shows that the estimated association between regional minimum wages and informal employment depends strongly on model specification and source of variation.
+
+## Issue 5: CRF Is Implemented But Exploratory
 
 ### Current Status
 
-Some older markdown files show corrupted Vietnamese accents or author names, for example in references to Perez Perez.
+CRF is now implemented through:
 
-This appears in some literature notes, not in the final new draft files.
+```text
+scripts/20_run_crf_main.py
+scripts/21_crf_cate_distribution_heterogeneity.py
+scripts/22_crf_stability_by_seed.py
+```
+
+Key outputs:
+
+```text
+reports/crf_implementation_note.md
+reports/tables/crf_ate_results.csv
+reports/tables/crf_cate_summary.csv
+reports/tables/crf_heterogeneity.csv
+reports/tables/crf_stability_by_seed.csv
+reports/figures/crf/
+```
+
+For `log_real_min_wage`, CRF estimates are broadly negative across seeds, but:
+
+- confidence intervals usually contain zero;
+- magnitudes are seed-sensitive;
+- CATEs are noisy with only 441 observations.
 
 ### Why This Matters
 
-Encoding problems make the repo look less professional and can create citation errors.
+CRF can help explore heterogeneity, but it should not be presented as the main causal estimator.
 
 ### Risk Level
 
-Low for analysis.
+Medium if properly framed.
 
-Medium for presentation and final submission.
+High if treated as causal proof.
 
-### How To Fix
+### Minimum Fix
 
-#### Minimum Fix
+Label CRF as:
 
-Do not use corrupted text directly in the final paper.
+```text
+exploratory heterogeneity analysis
+```
 
-#### Recommended Fix
+### Recommended Fix
 
-Clean the key literature files manually:
+Use CRF only after reporting OLS/FE/TWFE and DML. State that it explores whether estimated effects appear heterogeneous across productivity, unemployment, training, and employment scale, but individual CATEs are noisy.
 
-- replace corrupted author names;
-- normalize accents;
-- ensure UTF-8 encoding;
-- avoid mixing Vietnamese and English if the final paper is in English.
+### Strong Fix
+
+Only expand CRF if the paper explicitly includes a heterogeneity research question and can defend the small sample size.
+
+## Issue 6: `min_wage_growth` Remains Weak As A Main Treatment
+
+### Current Status
+
+`min_wage_growth` is unstable:
+
+- TWFE is statistically insignificant;
+- DML signs are unstable;
+- K-sweep DML shows only 56 percent negative signs;
+- confidence intervals often contain zero;
+- CRF CATEs are highly dispersed.
+
+### Recommendation
+
+Keep `min_wage_growth` as exploratory only.
+
+Do not use it as the main treatment.
+
+## Issue 7: Enhanced Nonlinearity Diagnostics Strengthen But Do Not Prove Causality
+
+### Current Status
+
+The main branch added:
+
+- residualized LOWESS;
+- PDP;
+- formal nonlinearity tests;
+- feature importance.
+
+These improve the evidence that linear specifications may be restrictive.
+
+### Key Interpretation
+
+The nonlinear structure appears stronger in pooled/year-FE settings than after province effects. This suggests that province-level structure and controls drive much of the nonlinearity.
+
+### Recommendation
+
+Use these diagnostics to justify DML and CRF as robustness tools, not as causal evidence.
+
+## Issue 8: Literature Metadata Needs Final Verification
+
+The repo has useful literature notes, but final publication status and ranking still need checking:
+
+- Nguyen Cuong Viet 2025 publication details;
+- whether Del Carpio et al. has a peer-reviewed version or only MPRA/RePEc;
+- final ranking/category for Perez Perez (2020) according to the advisor's required database;
+- final citation style.
+
+## Issue 9: Some Older Notes Have Encoding Problems
+
+Some older markdown files show corrupted Vietnamese accents and author names. This does not affect the modeling pipeline, but it should be cleaned before final presentation.
 
 ## Prioritized Action Plan
 
 ## Priority 1: Must Fix Before Final Paper
 
 1. Verify and document the official citation for `informal_rate`.
-2. Clearly label wage-region mapping as province-level approximation.
-3. Keep CRF blank because it is not implemented.
-4. Write the results as specification-sensitive evidence, not a causal conclusion.
-5. Verify literature publication status and citation details.
+2. Clearly disclose province-level wage-region approximation.
+3. Present the result as specification-sensitive and variation-source-sensitive.
+4. Distinguish main DML from DML with province dummies.
+5. Label CRF as exploratory heterogeneity analysis.
+6. Keep `min_wage_growth` exploratory only.
 
 ## Priority 2: Strongly Recommended
 
-1. Add a formal `reports/data_sources.md`.
-2. Add `mixed_district_region` flag to the processed wage-region mapping.
-3. Run a mapping robustness check excluding mixed district-region rows or provinces.
-4. Add province-grouped cross-fitting for DML.
-5. Add a short appendix explaining how each raw file maps to each final variable.
+1. Create `reports/data_sources.md`.
+2. Add a `mixed_district_region` flag.
+3. Run wage-region mapping sensitivity checks.
+4. Add a short appendix explaining variable construction from raw files.
+5. Clean encoding issues in final-facing literature notes.
 
 ## Priority 3: Nice To Have
 
-1. Build district-year wage-region exposure.
-2. Weight district exposure by labor force, employment, or population.
-3. Extend the wage panel backward to compute pre-2018 wage growth.
-4. Clean encoding issues in all old literature notes.
-5. Backtest or replicate a benchmark paper if replication data can be accessed.
+1. Build district-year wage-region treatment exposure.
+2. Weight district exposure by employment, labor force, or population.
+3. Extend the wage panel backward before 2018 to improve `min_wage_growth`.
+4. Replicate or backtest a benchmark paper if replication data are available.
 
-## Suggested Paper Positioning After These Fixes
+## Updated Bottom Line
 
-The paper should be positioned as:
+The project is stronger after the main merge. It now has richer diagnostics and exploratory CRF outputs. But the stronger evidence also makes the cautious conclusion clearer:
 
-> a transparent province-year empirical study of the association between regional minimum wage exposure and informal employment rates in Vietnam, with careful panel baselines, nonlinearity diagnostics, and DML robustness checks.
+> The current data support a transparent, specification-sensitive empirical study. They do not yet support a definitive causal claim about the effect of regional minimum wages on informal employment.
 
-It should not be positioned as:
+The most defensible final paper should emphasize:
 
-> definitive causal evidence that minimum wages increase or decrease informal employment.
-
-The strongest contribution is the disciplined research pipeline:
-
-1. build and validate the province-year panel;
-2. define Y-D-W clearly;
-3. document treatment variation and mapping limitations;
-4. run transparent baseline panel models;
-5. diagnose nonlinearity;
-6. use DML only as robustness;
-7. report specification sensitivity honestly.
-
-## Current Bottom Line
-
-The project is in a usable draft stage, but not yet in final-paper stage.
-
-The most important unresolved issue is not code execution. The pipeline runs and produces interpretable outputs. The main remaining work is documentation, treatment-measurement robustness, and cautious interpretation.
-
-The two most important fixes are:
-
-1. verify the official citation for `informal_rate`;
-2. strengthen or at least clearly disclose the province-level wage-region approximation.
-
-Once those are addressed, the paper narrative becomes much more defensible.
+- TWFE as the main linear panel benchmark;
+- DML as flexible-control robustness;
+- DML with province dummies as a key sensitivity check;
+- CRF as exploratory heterogeneity;
+- treatment mapping and data-source documentation as major limitations.
 
