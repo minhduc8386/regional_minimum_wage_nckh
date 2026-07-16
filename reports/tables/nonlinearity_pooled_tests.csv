@@ -1,0 +1,7 @@
+model,treatment,test,stat,pvalue
+pooled_with_controls,real_min_wage,Ramsey_RESET_2_3,53.771605122024226,1.3862589950970344e-21
+pooled_with_controls,real_min_wage,Joint_D2_D3,2.2224302219243164,0.10957995979074686
+pooled_with_controls,log_real_min_wage,Ramsey_RESET_2_3,52.59141179963379,3.5753679048613936e-21
+pooled_with_controls,log_real_min_wage,Joint_D2_D3,3.823487530045495,0.022592945067200998
+pooled_with_controls,min_wage_growth,Ramsey_RESET_2_3,47.29126991175055,2.6531076393474173e-19
+pooled_with_controls,min_wage_growth,Joint_D2_D3,0.3910591491164435,0.6765787750756569

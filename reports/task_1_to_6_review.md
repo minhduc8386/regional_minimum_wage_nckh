@@ -13,7 +13,7 @@ This note reviews the first six research tasks completed in the current workflow
 | 3. Explain why linear OLS may be limited | `reports/why_linear_ols_may_be_limited.md` | Complete | The note positions OLS/FE/TWFE as necessary baselines while explaining functional-form limits. |
 | 4. Review DML theta stability | `reports/dml_theta_convergence_interpretation.md` and `reports/tables/dml_theta_convergence_interpretation.csv` | Complete | The note correctly distinguishes stable DML direction from causal proof and flags `min_wage_growth` as unstable. |
 | 5. Choose main DML treatment | `reports/dml_treatment_choice.md` and `reports/tables/dml_treatment_choice.csv` | Complete | `log_real_min_wage` is selected as main DML treatment, `real_min_wage` as robustness, and `min_wage_growth` as exploratory. |
-| 6. Compare OLS/FE/TWFE vs DML | `reports/model_family_comparison.md` and `reports/tables/model_family_comparison.csv` | Complete | The comparison is framed by model role rather than claiming one model is automatically causal. CRF is intentionally left blank because it has not been implemented. |
+| 6. Compare OLS/FE/TWFE vs DML | `reports/model_family_comparison.md` and `reports/tables/model_family_comparison.csv` | Complete | The comparison is framed by model role rather than claiming one model is automatically causal. (Update: CRF has since been implemented; the comparison table now includes CRF and the DML province-dummies variant. See `reports/tables/method_comparison_summary.csv` for the canonical 19-row comparison.) |
 
 ## Consistency Check
 

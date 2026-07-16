@@ -21,7 +21,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
-from statsmodels.stats.diagnostic import linear_reset
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 INPUT_PATH = PROJECT_ROOT / "data" / "processed" / "final" / "analysis_panel_2018_2024.csv"
@@ -107,5 +106,5 @@ out = pd.DataFrame(rows)
 out.to_csv(OUT_PATH, index=False)
 pd.set_option("display.width", 160)
 print(out.to_string(index=False))
-n_rej = out["reject_linearity_5pct"].fillna(False).sum()
+n_rej = out["reject_linearity_5pct"].eq(True).sum()
 print(f"\nTests rejecting linearity at 5%: {int(n_rej)}/{len(out)}")

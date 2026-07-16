@@ -17,10 +17,12 @@ Outputs:
 """
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from scipy import stats
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import Ridge
 from sklearn.model_selection import KFold
@@ -75,8 +77,6 @@ def dml_partialling_out(y: np.ndarray, d: np.ndarray, learner_name: str,
     n = len(y)
     cluster_sum = pd.Series(psi).groupby(pd.Series(provinces)).sum().to_numpy()
     se = float(np.sqrt(np.sum(cluster_sum**2)) / n)
-    from scipy import stats
-
     z = theta / se
     p = float(2 * (1 - stats.norm.cdf(abs(z))))
     return {"theta": theta, "se": se, "p_value": p,
@@ -86,8 +86,6 @@ def dml_partialling_out(y: np.ndarray, d: np.ndarray, learner_name: str,
 # ---------------- Part 1: K sweep (chunked via CLI) ----------------
 # usage: python 18_... run <treatment> <K>     -> append chunk to dml_theta_by_k.csv
 #        python 18_... combine                 -> build interpretation table
-import sys
-
 BY_K_PATH = TABLES / "dml_theta_by_k.csv"
 mode = sys.argv[1] if len(sys.argv) > 1 else "combine"
 

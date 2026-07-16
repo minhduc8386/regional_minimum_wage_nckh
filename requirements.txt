@@ -1,7 +1,14 @@
-pandas
-numpy
-openpyxl
-pillow
-pypdf
-statsmodels
-linearmodels
+# Core data pipeline (scripts 01-13)
+pandas>=2.0
+numpy>=1.26
+openpyxl>=3.1
+pillow>=10.0
+pypdf>=4.0
+statsmodels>=0.14
+linearmodels>=6.0
+
+# Enhanced diagnostics, DML sweeps, and Causal Forest (scripts 14-23)
+scipy>=1.11
+matplotlib>=3.8
+scikit-learn>=1.4
+econml>=0.15

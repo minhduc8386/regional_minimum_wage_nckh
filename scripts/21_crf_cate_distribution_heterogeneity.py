@@ -22,6 +22,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from scipy.stats import gaussian_kde
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TABLES = PROJECT_ROOT / "reports" / "tables"
@@ -38,9 +39,6 @@ for d_col in TREATMENTS:
     cate = g["cate"].to_numpy()
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ax.hist(cate, bins=40, density=True, alpha=0.55, color="#4878a8", edgecolor="white")
-    # simple gaussian KDE
-    from scipy.stats import gaussian_kde
-
     xs = np.linspace(cate.min(), cate.max(), 300)
     ax.plot(xs, gaussian_kde(cate)(xs), color="#c44e52", lw=2)
     ax.axvline(0, color="black", lw=1.4, ls="--", label="0")

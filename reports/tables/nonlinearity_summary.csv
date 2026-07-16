@@ -1,5 +1,0 @@
-variable,visual_pattern,lowess_interpretation,model_evidence,conclusion
-unemployment_rate,visibly curved,"LOWESS departs from a straight line, suggesting possible non-linear association.",Custom RF has at least 10% lower CV RMSE than linear regression.,possible non-linearity
-labour_productivity,visibly curved,"LOWESS departs from a straight line, suggesting possible non-linear association.",Custom RF has at least 10% lower CV RMSE than linear regression.,possible non-linearity
-trained_labour_rate,mildly curved,"LOWESS departs from a straight line, suggesting possible non-linear association.",Custom RF has at least 10% lower CV RMSE than linear regression.,possible non-linearity
-employed_persons,visibly curved,"LOWESS departs from a straight line, suggesting possible non-linear association.",Custom RF has at least 10% lower CV RMSE than linear regression.,possible non-linearity
